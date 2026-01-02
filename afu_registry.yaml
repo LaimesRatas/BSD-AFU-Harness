@@ -1,0 +1,643 @@
+version: v23
+generated: '2026-01-02'
+visible_factors_policy:
+  decomposition: "Visible factors are aligned in a dedicated layer (V0\u2192V1): Tamagawa\
+    \ and torsion conventions."
+  default: use V0_TAM_TORS_TRANSLATION; upgrade to V1_TAM_TORS_MATCHING when exact
+    matching is proven
+local_conditions_policy:
+  decomposition: "Local Selmer-condition conventions are aligned in a separate layer\
+    \ (L0\u2192L1), distinct from visible factors."
+  default: use L0_LOCAL_TRANSLATION; upgrade to L1_LOCAL_MATCHING when equivalence
+    to Gate L conventions is proven
+dyadic_policy:
+  default: p odd only (p != 2)
+  opt_in_package: D2_DYADIC_LOCAL
+  publishing_rule: If dyadic policy is OFF, state results for all odd primes p (exclude
+    p=2 explicitly).
+  decomposition: Dyadic (p=2) behavior is opt-in to avoid accidental claims over Z
+    when only odd p is covered.
+packages:
+- id: W0_KATO_R0
+  name: Kato Euler system (rank 0 cotorsion/finiteness input)
+  gates_closed:
+  - AFU-2:A0_w
+  - F2
+  scope:
+    analytic_rank: 0
+    p_regime: typically p odd, good ordinary (package must specify)
+    curve_family: elliptic curves over Q (package-restricted)
+    reduction: good at p (package-dependent)
+  hypotheses:
+  - L(E,1) != 0 (or nonvanishing Euler system class)
+  - residual irreducibility (mod p)
+  - local conditions compatible with f' Selmer
+  outputs:
+  - corank_Zp Sel_{p^infty}(E/Q) = 0 (cotorsion closure / F2 closed)
+  - 'often: finiteness of Sel_{p^infty} in rank 0 setting (package-dependent phrasing)'
+  normalization:
+    period: not used directly for A0_w output; still declare if L-values appear
+    lambda_trans: N/A or 1 (if no L-value normalization is consumed)
+    notes: Package gives structural Selmer control; valuation identity belongs to
+      M0.
+  citations:
+  - Kato 2004 (Asterisque 295) - Euler systems for modular forms
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:AFU2-indexID-conditional}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:AFU2-indexID-conditional}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-2
+  - F2
+  doc_hook_witness_by_gate:
+    AFU-2: \Cref{thm:dl-closure}
+    F2: \Cref{thm:dl-closure}
+- id: M0_IMC_ORDINARY
+  name: IMC/reciprocity (ordinary) -> valuation identity / p-part BSD (rank 0)
+  gates_closed:
+  - AFU-2:A0_m
+  - Index-ID
+  scope:
+    analytic_rank: 0
+    p_regime: p odd, ordinary at p, typically p !| N
+    curve_family: non-CM / semistable (package-dependent)
+    reduction: good ordinary at p
+  hypotheses:
+  - ordinary at p
+  - residual irreducibility
+  - IMC as proven in cited works applies
+  outputs:
+  - v_p(L(E,1)/Omega_E) matches cohomological defect exponent (length/characteristic
+    ideal)
+  - Index-ID in determinant-line container (A0_m)
+  normalization:
+    period: 'declare: Neron vs optimal period; sign convention'
+    torsion: declare whether torsion factor is included in formula
+    tamagawa: declare whether cp factors are included and how
+    lambda_trans: explicit translation scalar aligning external conventions to t_BK
+  citations:
+  - Skinner-Urban 2014 (Invent. Math.) - IMC for GL2 (ordinary cases)
+  - Skinner 2014 arXiv:1407.1093 - p-part BSD (rank 0/1 forms, hypotheses)
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:AFU2-indexID-conditional}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:AFU2-indexID-conditional}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-2
+  - Index-ID
+  doc_hook_witness_by_gate:
+    AFU-2: \Cref{thm:dl-closure}
+    Index-ID: \Cref{thm:dl-closure}
+- id: R1_GZ_KOLY
+  name: 'Rank-1 bridge: Gross-Zagier + Kolyvagin'
+  gates_closed:
+  - AFU-3:Rank-Bridge (r_an=1 -> r_alg=1)
+  scope:
+    analytic_rank: 1
+    p_regime: p odd, package-dependent
+    curve_family: Heegner hypothesis (package-dependent)
+    reduction: varies
+  hypotheses:
+  - Heegner hypothesis for an imaginary quadratic field K
+  - L'(E,1) != 0
+  - non-torsion Heegner point + Kolyvagin system applicability
+  outputs:
+  - rank_Z E(Q) = 1
+  - Sha(E/Q) finite (in the rank-1 Heegner setting)
+  normalization:
+    period: if L' appears, declare conventions; otherwise N/A
+    lambda_trans: declare if comparing heights/periods to t_BK conventions
+  citations:
+  - Gross-Zagier - Heegner points and L-derivatives
+  - Kolyvagin - Euler systems / Heegner point bounds
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:R1-no-hidden-scaling}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:R1-no-hidden-scaling}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-3
+  doc_hook_witness_by_gate:
+    AFU-3: \Cref{thm:dl-closure}
+- id: M0_IMC_SUPERSINGULAR_PLUSMINUS
+  name: "Supersingular IMC/reciprocity (\xB1/signed Selmer) -> valuation identity\
+    \ (rank 0)"
+  gates_closed:
+  - AFU-2:A0_m
+  - Index-ID
+  - supersingular
+  scope:
+    analytic_rank: 0
+    p_regime: p odd, supersingular at p (a_p = 0 or a_p != 0 depending on cited package)
+    curve_family: 'elliptic curves over Q (package-restricted: often semistable /
+      non-CM assumptions vary)'
+    reduction: good supersingular at p
+    signed_structure: plus/minus or signed Selmer (package must specify)
+  hypotheses:
+  - supersingular at p (specify whether a_p=0 is required)
+  - "appropriate signed Selmer groups (\xB1/signed) are used"
+  - main conjecture / divisibility in the signed setting applies (as proven in cited
+    works)
+  - residual irreducibility / local hypotheses as required by the chosen reference
+  outputs:
+  - p-adic valuation identity in the determinant-line container (A0_m) for the signed
+    setting
+  - 'Index-ID: transported spectral germ valuation matches signed Selmer defect exponent'
+  normalization:
+    period: "declare the p-adic L-function normalization (Pollack \xB1, or signed\
+      \ variants) and its period choice"
+    torsion: declare torsion convention if included in external BSD-style statement
+    tamagawa: declare whether bad-prime Tamagawa factors are built-in or handled separately
+    lambda_trans: explicit translation scalar aligning signed p-adic L-function conventions
+      to t_BK
+    notes: Umbrella entry; prefer the split packages M0_IMC_SUPERSINGULAR_AP0 and
+      M0_IMC_SUPERSINGULAR_APNE0 for explicit hypotheses/citations.
+  citations:
+  - "Kobayashi (\xB1 Selmer groups for supersingular primes)"
+  - "Pollack (\xB1 p-adic L-functions)"
+  - Wan (Iwasawa main conjectures / BSD-type results in supersingular settings; package-dependent)
+  - Sprung / signed main conjecture variants (package-dependent)
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:AFU2-indexID-conditional}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:AFU2-indexID-conditional}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-2
+  - Index-ID
+  - supersingular
+  doc_hook_witness_by_gate:
+    AFU-2: \Cref{thm:dl-closure}
+    Index-ID: \Cref{thm:dl-closure}
+    supersingular: \Cref{thm:dl-closure}
+- id: L_BAD_REDUCTION_LOCAL
+  name: 'Local package at bad reduction primes (p | N): determinant-line local conditions
+    / Tamagawa matching'
+  gates_closed:
+  - AFU-1G:Local@p|N
+  - Visible-factors:cp
+  - S_AFU
+  scope:
+    analytic_rank: any
+    p_regime: p arbitrary (typically p odd); applies at primes dividing the conductor
+      N
+    curve_family: elliptic curves over Q
+    reduction: multiplicative or additive at l | N (package must specify the reduction
+      types covered)
+  hypotheses:
+  - "explicit local condition complex agrees with the chosen Selmer condition (e.g.,\
+    \ connected/N\xE9ron component condition)"
+  - Tamagawa factor c_l(E) is incorporated consistently in the reference element t_BK
+  - any small-prime pathologies are excluded or handled explicitly (notably l=2)
+  outputs:
+  - local determinant-line compatibility at l | N (no hidden normalization mismatch
+    at these primes)
+  - visible factor alignment for Tamagawa numbers within the t_BK reference element
+  normalization:
+    tamagawa: declare cp convention (connected component index) used by both sides
+    period: N/A locally
+    lambda_trans: usually 1 if both sides use the same Tamagawa matching convention;
+      otherwise declare
+    notes: This is where Gate L's 'Tamagawa matching' is certified against the external
+      package conventions.
+  citations:
+  - "Standard local Selmer condition literature (e.g., Bloch\u2013Kato / Nekov\xE1\
+    \u0159 Selmer complexes)"
+  - Your Gate L / LAI local interface (internal reference)
+  doc_hook: 'Import: \Cref{lem:LAI-local-equals-fprime-bad}; Use: \Cref{cor:afu-1g-from-lai}'
+  doc_hook_import: \Cref{lem:LAI-local-equals-fprime-bad}
+  doc_hook_use: \Cref{cor:afu-1g-from-lai}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-1G
+  - Visible-factorscp
+  - SAFU
+  doc_hook_witness_by_gate:
+    AFU-1G: \Cref{thm:dl-closure}
+    Visible-factorscp: \Cref{thm:dl-closure}
+    SAFU: \Cref{thm:dl-closure}
+- id: D2_DYADIC_LOCAL
+  name: 'Dyadic local package (p=2): 2-adic determinant-line integrality and local
+    conditions'
+  gates_closed:
+  - AFU-1G:Local@2
+  - S_AFU
+  - dyadic
+  scope:
+    analytic_rank: any
+    p_regime: p=2
+    curve_family: elliptic curves over Q
+    reduction: package must specify (good/multiplicative/additive at 2)
+    default_inclusion: excluded (opt-in; many IMC/Euler-system packages assume p odd)
+  hypotheses:
+  - A dedicated p=2 local theory is specified (2-adic comparison/integrality framework
+    + explicit local condition complexes).
+  - All reduction-type subcases at 2 are either handled or excluded explicitly (good/multiplicative/additive).
+  - Compatibility with the global determinant-line conventions (t_BK / V_vis) is stated.
+  outputs:
+  - A well-posed determinant-line lattice and valuation at p=2 for the chosen local-condition
+    perfect complex.
+  - An explicit statement of how the dyadic local factor is absorbed (e.g. via Tamagawa
+    matching / period normalization) in the global reference element.
+  normalization:
+    period: declare any special dyadic period conventions
+    tamagawa: declare c_2(E) convention and whether it is absorbed
+    lambda_trans: declare if dyadic package uses different normalizations from the
+      main (odd p) packages
+    notes: Default global flow treats p=2 as an explicit exceptional place; include
+      this package only if a concrete dyadic reference is adopted.
+  citations:
+  - Greenberg (notes on Iwasawa theory; many main-conjecture statements assume p>2
+    / require extra care at p=2).
+  - "Nekov\xE1\u0159 (Selmer complexes framework, including small-prime local conditions)."
+  doc_hook: 'Import: \Cref{lem:LAI-local-equals-fprime-bad}; Use: \Cref{cor:afu-1g-from-lai}'
+  doc_hook_import: \Cref{lem:LAI-local-equals-fprime-bad}
+  doc_hook_use: \Cref{cor:afu-1g-from-lai}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-1G
+  - SAFU
+  - dyadic
+  doc_hook_witness_by_gate:
+    AFU-1G: \Cref{thm:dl-closure}
+    SAFU: \Cref{thm:dl-closure}
+    dyadic: \Cref{thm:dl-closure}
+- id: M0_IMC_SUPERSINGULAR_AP0
+  name: "Supersingular IMC/reciprocity (a_p=0, \xB1/signed) -> valuation identity\
+    \ (rank 0)"
+  gates_closed:
+  - AFU-2:A0_m
+  - Index-ID
+  - supersingular
+  - a_p=0
+  scope:
+    analytic_rank: 0
+    p_regime: "p odd, supersingular at p with a_p=0 (covers the classical \xB1 theory;\
+      \ p\u22653, often p\u22655 in some corollaries)"
+    curve_family: elliptic curves over Q (often semistable / non-CM assumptions vary
+      by source)
+    reduction: good supersingular at p
+    signed_structure: plus/minus (Pollack/Kobayashi style) or equivalent signed Selmer
+  hypotheses:
+  - supersingular at p with a_p=0
+  - "signed (\xB1) Selmer groups are used"
+  - signed IMC / reciprocity law in the a_p=0 setting applies (as proven in the chosen
+    reference)
+  - residual irreducibility and local hypotheses as required
+  outputs:
+  - 'A0_m (rank 0): p-adic valuation identity in the signed determinant-line container'
+  - 'Index-ID: valuation of the transported signed p-adic L-germ matches the signed
+    Selmer defect exponent'
+  normalization:
+    period: "declare Pollack \xB1 p-adic L-function normalization and associated period\
+      \ choice"
+    torsion: declare torsion convention if included in external BSD-style statement
+    tamagawa: declare whether bad-prime Tamagawa factors are built-in or handled via
+      L_BAD_REDUCTION_LOCAL
+    lambda_trans: explicit translation scalar aligning signed conventions to t_BK
+    notes: "Keep the signed (\xB1) conventions explicit; do not merge with ordinary\
+      \ M0."
+  citations:
+  - 'Kobayashi, Invent. Math. 152 (2003): plus/minus Selmer groups at supersingular
+    primes.'
+  - "Pollack, Duke Math. J. 118 (2003): \xB1 p-adic L-functions at a supersingular\
+    \ prime (a_p=0)."
+  - "Wan, arXiv:1411.6352 (2014/2018): \xB1 main conjecture for a_p=0; corollaries\
+    \ include p-part BSD for analytic rank 0 or 1."
+  - "Kings\u2013Loeffler\u2013Zerbes (explicit reciprocity for Beilinson\u2013Flach\
+    \ elements; used in Wan\u2019s approach)."
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:AFU2-indexID-conditional}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:AFU2-indexID-conditional}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-2
+  - Index-ID
+  - supersingular
+  - ap0
+  doc_hook_witness_by_gate:
+    AFU-2: \Cref{thm:dl-closure}
+    Index-ID: \Cref{thm:dl-closure}
+    supersingular: \Cref{thm:dl-closure}
+    ap0: \Cref{thm:dl-closure}
+- id: M0_IMC_SUPERSINGULAR_APNE0
+  name: "Supersingular IMC/reciprocity (a_p\u22600, signed) -> valuation identity\
+    \ (rank 0)"
+  gates_closed:
+  - AFU-2:A0_m
+  - Index-ID
+  - supersingular
+  - a_p!=0
+  scope:
+    analytic_rank: 0
+    p_regime: "p odd, supersingular at p with a_p\u22600 (signed Selmer / sharp-flat\
+      \ or multi-signed variants)"
+    curve_family: elliptic curves over Q (package-dependent assumptions)
+    reduction: good supersingular at p
+    signed_structure: "signed Selmer (beyond classical \xB1) as in Sprung-type frameworks"
+  hypotheses:
+  - supersingular at p with a_p != 0
+  - appropriate signed Selmer groups are defined and used
+  - signed IMC / reciprocity in the a_p!=0 setting applies (as proven in the chosen
+    reference)
+  - residual irreducibility and local hypotheses as required
+  outputs:
+  - 'A0_m (rank 0): valuation identity in the signed determinant-line container'
+  - 'Index-ID: valuation of the transported signed p-adic L-germ matches signed Selmer
+    defect exponent'
+  normalization:
+    period: declare signed p-adic L-function normalization and period choice
+    torsion: declare torsion convention if included
+    tamagawa: declare whether bad-prime Tamagawa factors are built-in or handled via
+      L_BAD_REDUCTION_LOCAL
+    lambda_trans: explicit translation scalar aligning signed conventions to t_BK
+    notes: "This is distinct from the a_p=0 \xB1 theory; keep separate IDs."
+  citations:
+  - 'Sprung, arXiv:1610.10017 (2016): Iwasawa main conjecture at odd supersingular
+    primes; BSD consequences for analytic rank 0 or 1.'
+  - 'Sprung, arXiv:0903.3419 (2009): extension of the supersingular Iwasawa setup
+    beyond a_p=0.'
+  - 'Sprung, J. Number Theory 132 (2012): pair of main conjectures at supersingular
+    primes (signed Selmer).'
+  - "Lei\u2013Loeffler\u2013Zerbes (2012): signed Selmer groups via (phi,Gamma)-modules\
+    \ (context for signed local conditions)."
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:AFU2-indexID-conditional}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:AFU2-indexID-conditional}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-2
+  - Index-ID
+  - supersingular
+  - ap0
+  doc_hook_witness_by_gate:
+    AFU-2: \Cref{thm:dl-closure}
+    Index-ID: \Cref{thm:dl-closure}
+    supersingular: \Cref{thm:dl-closure}
+    ap0: \Cref{thm:dl-closure}
+- id: M1_RANK1_PPART_BSD
+  name: Rank-1 p-part BSD / index identification (JSW/Wan-type)
+  gates_closed:
+  - AFU-2:M1 (rank-1 p-part Index-ID)
+  - Index-ID
+  - rank-1
+  scope:
+    analytic_rank: 1
+    p_regime: p odd; ordinary or supersingular depending on the chosen package
+    curve_family: elliptic curves over Q satisfying the package hypotheses (often
+      Heegner-type or additional local assumptions)
+    reduction: package-dependent (good at p typically)
+  hypotheses:
+  - analytic rank 1 (L'(E,1) != 0) and package-specific nonvanishing hypotheses
+  - rank-1 arithmetic input available (Heegner/Kolyvagin or Kato-style rank-1 extension,
+    depending on package)
+  - IMC / reciprocity in rank-1 setting applies (as proven in chosen references)
+  - residual irreducibility and local hypotheses as required
+  outputs:
+  - "Rank-1 p-part BSD / valuation identity for the leading term (often ord_p(L'(E,1)/(\u03A9\
+    _E\xB7Reg)) = ord_p(#Sha\xB7\u220Fc_\u2113) under package hypotheses)."
+  - Index identification in rank-1 setting (commonly via equality of characteristic/Fitting
+    ideals / Iwasawa main conjecture with Heegner-point input).
+  normalization:
+    period: "declare whether the leading term uses N\xE9ron vs optimal period, and\
+      \ any p-adic height normalization"
+    torsion: declare torsion factor convention
+    tamagawa: declare how Tamagawa factors enter; use L_BAD_REDUCTION_LOCAL if separated
+    lambda_trans: explicit translation scalar aligning external rank-1 normalizations
+      to t_BK
+    notes: This package complements AFU-3 (rank bridge) by providing the valuation/index
+      identification in rank 1.
+  citations:
+  - "Jetchev\u2013Skinner\u2013Wan, arXiv:1512.06894 (2015) and Camb. J. Math. 5 (2017):\
+    \ p-part BSD for analytic rank one (p\u22655 good reduction; p=3 with a_p=0 in\
+    \ the supersingular case)."
+  - 'Castella, arXiv:1704.06608 (2017) / Camb. J. Math. 6 (2018): extension to primes
+    of multiplicative reduction under additional ramification hypotheses.'
+  - "Wan, arXiv:1411.6352 (2014/2018): supersingular a_p=0, analytic rank 0 or 1 corollaries\
+    \ of the \xB1 main conjecture."
+  - id: C0_MANIN_INTEGERITY
+    name: Manin constant integrality + explicit period translation (C0)
+    gates_closed:
+    - Visible-factors:period
+    - S_AFU:period
+    scope:
+      analytic_rank: any
+      p_regime: all primes p (statement is global; p-part used via lambda_trans)
+      curve_family: optimal elliptic curves over Q (strong Weil / optimal quotient)
+      reduction: any
+    hypotheses:
+    - "E is optimal in its isogeny class; modular parametrization \u03C6: X_0(N) ->\
+      \ E fixed"
+    - "N\xE9ron differential \u03C9_E fixed; newform f_E fixed"
+    outputs:
+    - c_E is an integer (so period mismatch is a global integer scaling)
+    - "a canonical translation scalar lambda_trans(period)=c_E^{\xB11} is available\
+      \ to align external period conventions with t_BK"
+    normalization:
+      period: "Rule: \u03C6^*(\u03C9_E) = c_E \xB7 (2\u03C0i f(z)dz). If external\
+        \ package uses the 'optimal' differential from f, then convert by scaling\
+        \ with c_E."
+      lambda_trans: "Set \u03BB_trans := c_E (or 1/c_E depending on direction: external->t_BK\
+        \ vs t_BK->external). Record the choice explicitly."
+      notes: C0 does NOT assert c_E=1. It only prevents hidden non-integral period
+        drift by making the scaling explicit and integral.
+    citations:
+    - "Agashe\u2013Ribet\u2013Stein, The Manin Constant (survey; integrality of c_E)"
+    - 'LMFDB knowledge: Manin constant definition and integrality'
+  - id: C1_MANIN_SEMISTABLE_EQUAL1
+    name: 'Semistable Manin conjecture: c_E = 1 for semistable E (C1)'
+    gates_closed:
+    - Visible-factors:period
+    - S_AFU:period
+    - upgrade:semistable
+    scope:
+      analytic_rank: any
+      p_regime: all primes p (global statement)
+      curve_family: semistable optimal elliptic curves over Q
+      reduction: semistable (good or multiplicative at all bad primes)
+    hypotheses:
+    - E/Q is semistable and optimal
+    outputs:
+    - c_E = 1 (period conventions align with no residual scaling; lambda_trans(period)=1)
+    normalization:
+      period: "N\xE9ron vs optimal periods coincide for the modular parametrization\
+        \ (c_E=1)."
+      lambda_trans: "\u03BB_trans(period)=1."
+      notes: This is the cleanest way to remove period scaling from S_AFU in the semistable
+        regime.
+    citations:
+    - "\u010Cesnavi\u010Dius, The Manin constant in the semistable case (Compositio\
+      \ 2018 / arXiv:1703.02951)"
+  - id: C2_MANIN_ADDITIVE_DIVISIBILITY
+    name: 'General bounds: c_E divisible only by additive primes / quantitative bounds
+      (C2)'
+    gates_closed:
+    - Visible-factors:period
+    - S_AFU:period
+    - upgrade:bounds
+    scope:
+      analytic_rank: any
+      p_regime: all primes p (bounds give p-adic control of c_E)
+      curve_family: optimal elliptic curves over Q (general case)
+      reduction: any (additive primes singled out)
+    hypotheses:
+    - E optimal; modular parametrization fixed
+    outputs:
+    - c_E has controlled prime divisibility (in particular, strong constraints outside
+      additive reduction primes; quantitative bounds available)
+    - yields an explicit bound on v_p(c_E) usable inside lambda_trans bookkeeping
+    normalization:
+      period: "Use bounds to restrict possible p-adic mismatch between optimal and\
+        \ N\xE9ron periods."
+      lambda_trans: "\u03BB_trans(period)=c_E^{\xB11} with v_p(c_E) constrained by\
+        \ C2."
+      notes: Use C2 when you need more than 'integer' but less than 'equals 1' in
+        non-semistable families.
+    citations:
+    - "\u010Cesnavi\u010Dius, The Manin constant and the modular degree (2022)"
+    - "Agashe\u2013Ribet\u2013Stein, The Manin Constant (survey)"
+  - id: V0_TAM_TORS_TRANSLATION
+    name: 'Visible factors translation: Tamagawa + torsion normalization dictionary
+      (V0)'
+    gates_closed:
+    - Visible-factors:tamagawa
+    - Visible-factors:torsion
+    - V_vis:translation
+    scope:
+      analytic_rank: any
+      p_regime: all primes p (used as a bookkeeping/translation layer)
+      curve_family: elliptic curves over Q
+      reduction: any
+    hypotheses:
+    - external package declares its local condition convention at bad primes (connected
+      vs full cohomology) and how c_ell enters
+    - external package declares its torsion convention (whether |E(Q)_tors|^{-2} is
+      included, and which quotient it uses)
+    - a comparison isomorphism iota_ext is specified (maps external determinant line
+      to the DLT reference line)
+    outputs:
+    - "an explicit scalar \u03BB_trans(vis) \u2208 Q^\xD7 aligning external Tamagawa/torsion\
+      \ conventions to the DLT reference element t_BK"
+    - "eliminates hidden factors: any mismatch is recorded as \u03BB_trans(vis), not\
+      \ smuggled into A0_m/M0/M1"
+    normalization:
+      tamagawa: "Record whether external side uses \u220F c_ell or connected-component\
+        \ local conditions; define the correction factor explicitly."
+      torsion: Record whether external side includes |E(Q)_tors|^{-2}; define correction
+        factor explicitly.
+      lambda_trans: "Set \u03BB_trans(vis) := (tamagawa_correction)\xB7(torsion_correction).\
+        \ Combine with \u03BB_trans(period) from C* if needed."
+      notes: 'V0 is always safe: it does NOT claim the corrections are 1; it makes
+        them explicit and computable.'
+    citations:
+    - Standard BSD factor conventions (Tamagawa numbers; torsion normalization) as
+      used in classical BSD statements
+    - Your DLT reference element t_BK definition (internal)
+  - id: V1_TAM_TORS_MATCHING
+    name: Exact matching of visible Tamagawa/torsion factors to the DLT reference
+      (V1)
+    gates_closed:
+    - Visible-factors:tamagawa
+    - Visible-factors:torsion
+    - V_vis=1:visible
+    scope:
+      analytic_rank: any
+      p_regime: all odd primes p (typically); dyadic handled separately
+      curve_family: elliptic curves over Q in the package regime (often semistable/non-exceptional
+        local types)
+      reduction: package-dependent; must specify which bad reduction types are covered
+    hypotheses:
+    - external arithmetic package uses BSD-normalized local conditions consistent
+      with Gate L (or provides a proof of equivalence)
+    - torsion factor conventions are proven to match the DLT normalization (or are
+      shown to be absorbed elsewhere)
+    - any exceptional small-prime local subtleties are excluded or handled (notably
+      p=2)
+    outputs:
+    - "\u03BB_trans(vis)=1 (no residual visible mismatch for Tamagawa/torsion in the\
+      \ declared scope)"
+    - in combination with C1 (or C0/C2), yields V_vis(E)=1 in the declared scope
+    normalization:
+      tamagawa: "Prove/declare: external \u220Fc_ell conventions coincide with Gate\
+        \ L/Tamagawa matching in t_BK."
+      torsion: 'Prove/declare: torsion conventions coincide (or correction is identically
+        1 in scope).'
+      lambda_trans: "\u03BB_trans(vis)=1."
+      notes: V1 is the upgrade that removes visible-factor caveats; use V0 when you
+        only want a transparent translation layer.
+    citations:
+    - External package's normalization theorem (must be cited once chosen)
+    - Gate L (Tamagawa matching) and DLT torsion factor conventions (internal)
+  - id: L0_LOCAL_TRANSLATION
+    name: Local condition convention translation (connected vs full local cohomology)
+      (L0)
+    gates_closed:
+    - Local-conditions:translation
+    - S_AFU:local
+    - Interface:Selmer
+    scope:
+      analytic_rank: any
+      p_regime: "all primes p (bookkeeping layer; local prime \u2113 varies)"
+      curve_family: elliptic curves over Q
+      reduction: "especially relevant at bad primes \u2113|N"
+    hypotheses:
+    - "external package declares its local Selmer condition at each \u2113 (e.g.,\
+      \ Bloch\u2013Kato finite, Greenberg, or 'connected component' condition)"
+    - a comparison map between local condition complexes is specified (or at least
+      their index is computable)
+    - "Gate L in your framework fixes a target convention (connected/N\xE9ron component\
+      \ style) for the determinant-line local factor"
+    outputs:
+    - "an explicit local correction scalar \u03BB_loc(\u2113) (or local index) translating\
+      \ external local conditions to Gate L conventions"
+    - "prevents conflating 'Tamagawa mismatch' with a 'local condition mismatch':\
+      \ the latter is recorded as \u03BB_loc(\u2113)"
+    normalization:
+      local_condition: "State: external uses H^1_f(\u2113) vs connected condition;\
+        \ define the comparison index explicitly."
+      lambda_trans: "Define \u03BB_trans(local):=\u220F_{\u2113|N} \u03BB_loc(\u2113\
+        ). Keep separate from \u03BB_trans(vis) (Tamagawa/torsion)."
+      notes: 'L0 is always safe: it does not claim equivalence, only an explicit translation
+        accounting.'
+    citations:
+    - "Nekov\xE1\u0159 Selmer complexes / Bloch\u2013Kato local conditions (standard\
+      \ references)"
+    - Your Gate L definition of the local interface (internal)
+  - id: L1_LOCAL_MATCHING
+    name: Exact matching of local Selmer conditions to Gate L (L1)
+    gates_closed:
+    - Local-conditions:matching
+    - S_AFU:local
+    - Interface:Selmer
+    scope:
+      analytic_rank: any
+      p_regime: all odd primes p (typically); dyadic handled separately
+      curve_family: elliptic curves over Q in the package regime
+      reduction: "must specify which local reduction types at \u2113|N are covered"
+    hypotheses:
+    - "proof that external local conditions coincide with Gate L conventions at all\
+      \ relevant \u2113 (or coincide up to a factor already absorbed as Tamagawa)"
+    - exceptional small-prime local cases are excluded or handled explicitly
+    outputs:
+    - "\u03BB_trans(local)=1 in the declared scope (no residual local-condition mismatch)"
+    - ensures that any remaining mismatch is genuinely a visible-factor issue (handled
+      by V*) rather than a convention mismatch
+    normalization:
+      local_condition: "External local Selmer condition is proven equivalent to the\
+        \ connected/N\xE9ron component condition used in Gate L."
+      lambda_trans: "\u03BB_trans(local)=1."
+      notes: L1 is the upgrade that removes local-condition caveats; use L0 when you
+        only want explicit bookkeeping.
+    citations:
+    - External package's local-condition comparison theorem (must be cited once chosen)
+    - Your Gate L local conventions (internal)
+  doc_hook: 'Import: \Cref{thm:afu-upgrade}; Use: \Cref{prop:AFU2-indexID-conditional}'
+  doc_hook_import: \Cref{thm:afu-upgrade}
+  doc_hook_use: \Cref{prop:AFU2-indexID-conditional}
+  doc_hook_witness: \Cref{thm:dl-closure}
+  gates_closed_norm:
+  - AFU-2
+  - Index-ID
+  - rank-1
+  doc_hook_witness_by_gate:
+    AFU-2: \Cref{thm:dl-closure}
+    Index-ID: \Cref{thm:dl-closure}
+    rank-1: \Cref{thm:dl-closure}

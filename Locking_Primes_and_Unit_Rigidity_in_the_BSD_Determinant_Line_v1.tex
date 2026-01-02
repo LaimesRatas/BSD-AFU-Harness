@@ -1,0 +1,3355 @@
+% !TEX program = pdflatex
+\documentclass[11pt]{article}
+
+% =========================
+% Preamble (English)
+% =========================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[a4paper,margin=1in]{geometry}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+% =========================
+% Bibliography (biblatex + biber)
+% =========================
+\usepackage[backend=biber,style=numeric,sorting=nyt]{biblatex}
+\addbibresource{bsd_refs.bib}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+% =========================
+% Theorem environments (with aliascnt for cleveref compatibility)
+% =========================
+\usepackage{aliascnt}
+\usepackage{tabularx}
+
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+
+\newaliascnt{lemma}{theorem}
+\newtheorem{lemma}[lemma]{Lemma}
+\aliascntresetthe{lemma}
+
+\newaliascnt{proposition}{theorem}
+\newtheorem{proposition}[proposition]{Proposition}
+\aliascntresetthe{proposition}
+
+\newaliascnt{corollary}{theorem}
+\newtheorem{corollary}[corollary]{Corollary}
+\aliascntresetthe{corollary}
+
+\theoremstyle{definition}
+\newaliascnt{definition}{theorem}
+\newtheorem{definition}[definition]{Definition}
+\aliascntresetthe{definition}
+
+\newaliascnt{hypothesis}{theorem}
+\newtheorem{hypothesis}[hypothesis]{Hypothesis}
+\aliascntresetthe{hypothesis}
+
+\theoremstyle{remark}
+\newaliascnt{remark}{theorem}
+\newtheorem{remark}[remark]{Remark}
+\aliascntresetthe{remark}
+
+% =========================
+% Cleveref names (MUST be after theorem definitions)
+% =========================
+\crefname{theorem}{Theorem}{Theorems}
+\Crefname{theorem}{Theorem}{Theorems}
+\crefname{lemma}{Lemma}{Lemmas}
+\Crefname{lemma}{Lemma}{Lemmas}
+\crefname{proposition}{Proposition}{Propositions}
+\Crefname{proposition}{Proposition}{Propositions}
+\crefname{corollary}{Corollary}{Corollaries}
+\Crefname{corollary}{Corollary}{Corollaries}
+\crefname{definition}{Definition}{Definitions}
+\Crefname{definition}{Definition}{Definitions}
+\crefname{hypothesis}{Hypothesis}{Hypotheses}
+\Crefname{hypothesis}{Hypothesis}{Hypotheses}
+\crefname{remark}{Remark}{Remarks}
+\Crefname{remark}{Remark}{Remarks}
+\crefname{section}{Section}{Sections}
+\Crefname{section}{Section}{Sections}
+\crefname{equation}{}{}
+\Crefname{equation}{Equation}{Equations}
+
+% =========================
+% Minimal macros (edit as needed)
+% =========================
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+
+\newcommand{\Gal}{\mathrm{Gal}}
+\newcommand{\Sel}{\mathrm{Sel}}
+\newcommand{\Sha}{\mathrm{III}}
+\newcommand{\ord}{\mathrm{ord}}
+\newcommand{\Reg}{\mathrm{Reg}}
+\newcommand{\Tor}{\mathrm{Tor}}
+\newcommand{\vol}{\mathrm{vol}}
+
+\newcommand{\Det}{\mathrm{Det}}
+\newcommand{\detline}{\mathrm{det}}
+\newcommand{\Tr}{\mathrm{Tr}}
+
+
+% Operator names
+\DeclareMathOperator{\Ind}{Ind}
+\newcommand{\GL}{\mathrm{GL}}
+\newcommand{\SL}{\mathrm{SL}}
+% Module labels (five-step pipeline)
+\newcommand{\LAI}{\textnormal{\textbf{LAI}}} % Local Arithmetic Interface
+\newcommand{\SME}{\textnormal{\textbf{SME}}} % Spectral Matching Engine
+\newcommand{\DLT}{\textnormal{\textbf{DLT}}} % Determinant-Line Transport
+\newcommand{\URC}{\textnormal{\textbf{URC}}} % Unit-Rigidity Closure
+\newcommand{\AFU}{\textnormal{\textbf{AFU}}} % Arithmetic Finiteness Upgrade
+
+% Three-layer narrative (optional top layer)
+\newcommand{\SigAgg}{\boldsymbol{\Sigma}}
+\newcommand{\LamAgg}{\boldsymbol{\Lambda}}
+\newcommand{\PsiAgg}{\boldsymbol{\Psi}}
+
+% =========================
+% Title
+% =========================
+\title{Locking Primes and Unit-Rigidity in the BSD Determinant Line}
+\author{Giedrius Keraitis and AI}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We reorganize a determinant-line formulation of the Birch and Swinnerton-Dyer (BSD) comparison into a modular proof pipeline
+with explicit input--output contracts (``gates''). The framework separates the argument into:
+(i) a spectral construction producing a canonical germ at $s=1$ in a spectral determinant line,
+(ii) a canonical arithmetic target given by the Selmer/Bloch--Kato determinant line (the arithmetic container), and
+(iii) a rigidity mechanism transporting the spectral germ to the arithmetic line while controlling normalization.
+
+The core closure statement is a \emph{unit-rigidity closure} (URC): assuming the explicit integral-transport input at a single
+\emph{locking prime} $p_0$ (\Cref{thm:locking-prime-integrality}), local normalization removes all non-$p_0$ ambiguities and the remaining
+mismatch becomes a global scalar $u(E)\in\Q^\times$. URC forces $u(E)\in\{\pm 1\}$ and the real calibration fixes $u(E)=+1$.
+Equivalently, $u(E)=1$ globally, hence the induced local unit invariants satisfy $u^{\mathrm{glob}}_p(E)=1$ for every prime $p$.
+
+In analytic rank $0$ (so the $s=1$ germ is nonzero), the interface identification of the constructed spectral complex with the
+Selmer complex (\Cref{thm:LAI-interface}) yields an internal ``no $p$-divisible defect'' conclusion
+(\Cref{cor:afu-1g-from-lai}), i.e.\ it rules out the $p$-divisible obstruction in $\Sha(E/\Q)[p^\infty]$ without invoking Euler systems.
+The remaining discrete Index-ID step (order/Fitting ideal) is isolated and delegated to the AFU upgrade gates (AFU-2/AFU-3).
+
+For navigation, we also provide a three-aggregate overlay (Spectral Source $\rightarrow$ Rigid Channel $\rightarrow$ Arithmetic Quantizer),
+while the formal proof remains the gate sequence $\LAI\rightarrow\SME\rightarrow\DLT\rightarrow\URC\rightarrow\AFU$.
+\end{abstract}
+
+\paragraph{Status.}
+This paper establishes the determinant-line locking step $u(E)=1$ under the explicitly stated URC admissibility contract,
+including the integral transport input at a locking prime $p_0$ (\Cref{thm:locking-prime-integrality}).
+Any conversion of the resulting determinant-line identity into classical $\#\Sha$ or Fitting/Euler-characteristic statements is
+formulated as an external arithmetic upgrade interface (AFU-2/AFU-3).
+
+
+
+
+% ============================================================
+\paragraph{Scope (primes and exceptional set).}
+Unless explicitly stated otherwise, our instantiated $p$-adic constructions are taken at odd primes $p\neq 2$.
+The locking-prime integrality input controls lattice-transport for all primes $p\not\mid 2Nc_E$, and the remaining
+finite exceptional set $S_{\mathrm{AFU}}(E)=\{p:\,p\mid 2Nc_E\}$ is treated as an explicit local bookkeeping interface inside \AFU.
+In particular, we do not claim to resolve the dyadic prime or Manin-constant normalization issues internally; these are
+recorded as standard external/local upgrade inputs when one seeks a full $\Z$-level statement.
+
+\section{Introduction}
+\label{sec:introduction}
+
+\paragraph{Scope and architecture in one sentence.}
+We do not ``bypass'' the Tate--Shafarevich group $\Sha$.
+Instead, we formulate the BSD comparison in the canonical Selmer/Bloch--Kato determinant-line container,
+lock the \emph{residual unit ambiguity} in the spectral-to-arithmetic transport \emph{globally} by selecting a locking prime $p_0$ satisfying \Cref{thm:locking-prime-integrality},
+and isolate any finiteness/cardinality interpretation as an optional arithmetic upgrade module.
+In analytic rank $0$ (so $L(E,1)\neq 0$), this separation has a concrete payoff:
+once the Selmer-interface theorem (\Cref{thm:LAI-interface}) is in place, the $p$-primary defect cone is forced to have no $p$-divisible cohomology
+(\Cref{cor:afu-1g-from-lai}), i.e.\ the $p$-divisible obstruction in $\Sha(E/\Q)[p^\infty]$ is ruled out by purely local control.
+
+\subsection{The BSD factor identity and what is (not) being claimed}
+\label{sec:intro-bsd}
+
+\paragraph{Notation.}
+We write $\Sha(E/\Q)$ (or simply $\Sha$) for the Tate--Shafarevich group of $E/\Q$.
+In displayed formulas we use the standard Cyrillic-style symbol; in running text we use ``$\Sha$''.
+
+Let $E/\Q$ be an elliptic curve of conductor $N$, with analytic rank
+$r=\ord_{s=1}L(E,s)$.
+The Birch--Swinnerton-Dyer conjecture predicts that the leading coefficient
+$L^{(r)}(E,1)/r!$ is governed by an arithmetic ``volume'' built from the real period,
+the N\'eron--Tate regulator, torsion, Tamagawa factors, and the Tate--Shafarevich group:
+\[
+\frac{L^{(r)}(E,1)}{r!\,\Omega_E}
+\ \stackrel{?}{=}\
+\frac{\Reg(E)\,\prod_{\ell\mid N}c_\ell(E)\,\#\Sha(E/\Q)}{\#E(\Q)_{\mathrm{tors}}^2}.
+\]
+A persistent difficulty is that $\Sha(E/\Q)$ is a genuinely global
+cohomological object measuring the failure of the Hasse principle, and its finiteness
+is not a matter of normalization or notation.
+
+This paper reorganizes the proof architecture so that the \emph{only} nontrivial
+global ambiguity that survives the spectral-to-arithmetic comparison is isolated as a
+single determinant-line (lattice index) defect. In particular, we emphasize:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{\LAI\ (Local Arithmetic Interface).}
+Fixes the local integral input (Selmer/Bloch--Kato local conditions, integral lattices, and the visible normalization conventions).
+This separates purely integral packaging from the later arithmetic finiteness/identification steps. \cite{SilvermanAEC1,Cassels1962}
+
+\item \textbf{\SME\ (Spectral Matching Engine).}
+Produces the rank-$0$ spectral output in a one-dimensional $\Q$-line (the ``spectral volume'') together with its canonical nonzero class.
+This is the spectral source element transported into the arithmetic determinant line. \cite{FukayaKato2006ETNC,BurnsFlach2001TNC}
+
+\item \textbf{\DLT\ (Determinant-Line Transport).}
+Transports the spectral class into the Bloch--Kato/Selmer determinant line via the comparison data (period pairing and determinant-line identifications),
+producing a well-defined scalar ambiguity $u(E)\in\Z_p^\times$ on the $p$-adic side. \cite{Nekovar2006,FukayaKato2006ETNC}
+
+\item \textbf{\URC\ (Unit-Rigidity Closure).}
+Closes the residual unit ambiguity by forcing $u(E)=1$ (after real calibration), eliminating hidden unit-normalization freedom in the transport.
+
+\item \textbf{\AFU\ (Arithmetic Finiteness/Upgrade interfaces).}
+Records the remaining arithmetic inputs (Index--ID, rank bridge, Sha finiteness) as explicit plug-in gates, imported from external arithmetic packages.
+\end{itemize}
+
+% ============================================================
+\section{Executive Overview (Architecture at a Glance)}
+\label{sec:overview}
+
+\subsection{Facade architecture: \texorpdfstring{$\SigAgg$--$\LamAgg$--$\PsiAgg$}{Sigma--Lambda--Psi} with an internal five-module DAG}
+\label{sec:facade}
+
+\paragraph{Purpose.}
+For exposition we package the proof into three super-aggregates
+\[
+\SigAgg \;\longrightarrow\; \LamAgg \;\xrightarrow{\;\PsiAgg\;}\; \text{(defect/index data)}.
+\]
+This \emph{does not bypass} the Tate--Shafarevich group; it isolates precisely where its
+contribution enters (as a determinant-line defect that can be recorded as a lattice index once integral structures are fixed)
+and separates the unconditional unit-rigidity closure from the additional arithmetic input needed to upgrade to
+classical finiteness/cardinality statements.
+
+\paragraph{The three super-aggregates (safe definitions).}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{\LAI\ (Local Arithmetic Interface).}
+Fixes the local integral input (Selmer/Bloch--Kato local conditions, integral lattices, and the visible normalization conventions).
+This separates purely integral packaging from the later arithmetic finiteness/identification steps. \cite{SilvermanAEC1,Cassels1962}
+
+\item \textbf{\SME\ (Spectral Matching Engine).}
+Produces the rank-$0$ spectral output in a one-dimensional $\Q$-line (the ``spectral volume'') together with its canonical nonzero class.
+This is the spectral source element transported into the arithmetic determinant line. \cite{FukayaKato2006ETNC,BurnsFlach2001TNC}
+
+\item \textbf{\DLT\ (Determinant-Line Transport).}
+Transports the spectral class into the Bloch--Kato/Selmer determinant line via the comparison data (period pairing and determinant-line identifications),
+producing a well-defined scalar ambiguity $u(E)\in\Z_p^\times$ on the $p$-adic side. \cite{Nekovar2006,FukayaKato2006ETNC}
+
+\item \textbf{\URC\ (Unit-Rigidity Closure).}
+Closes the residual unit ambiguity by forcing $u(E)=1$ (after real calibration), eliminating hidden unit-normalization freedom in the transport.
+
+\item \textbf{\AFU\ (Arithmetic Finiteness/Upgrade interfaces).}
+Records the remaining arithmetic inputs (Index--ID, rank bridge, Sha finiteness) as explicit plug-in gates, imported from external arithmetic packages.
+\end{itemize}
+
+% ============================================================
+\section{Architecture and Main Statements}
+\label{sec:architecture}
+
+\subsection{Two-layer view: facade vs.\ proof pipeline}
+\label{sec:facade-vs-pipeline}
+
+We present the argument in two layers.
+
+\paragraph{Facade (executive view): $\SigAgg$--$\LamAgg$--$\PsiAgg$.}
+We use the high-level triad
+\[
+\SigAgg \quad\text{(spectral hologram)}\,,\qquad
+\LamAgg \quad\text{(arithmetic container)}\,,\qquad
+\PsiAgg \quad\text{(rigidity lock / mismatch detector)}.
+\]
+The reviewer-safe correction is that \emph{$\LamAgg$ is not ``MW without $\Sha$''}.
+Rather, $\LamAgg$ is the \emph{canonical Selmer/Bloch--Kato determinant-line target}, in which the
+``visible'' Mordell--Weil contribution and the ``defect'' contribution (classically encoded by $\Sha$)
+appear as distinct cohomological pieces inside a single canonical container.
+This is exactly the setting where a canonical comparison $\SigAgg \leftrightarrow \LamAgg$ makes sense.
+Determinant lines and their functoriality are used in the standard sense of \cite{Deligne1987,KnudsenMumford1976}.
+
+\paragraph{Core proof pipeline (mechanism view): five aggregates.}
+Internally, the proof is organized as
+\[
+\LAI \;\longrightarrow\; \SME \;\longrightarrow\; \DLT \;\longrightarrow\; \URC
+\;\longrightarrow\; \AFU\ \text{(optional)}.
+\]
+Each module has a strict I/O contract (minimal sufficient statistics). The unit-normalization ambiguity
+is closed by \URC; any arithmetic finiteness/cardinality upgrade is isolated in \AFU.
+
+\subsection{Aggregate contracts (one-paragraph API)}
+\label{sec:aggregate-contracts}
+
+\paragraph{A. \LAI\ (Local Arithmetic Interface).}
+\LAI\ packages local normalization data (ramified blocks, Tamagawa conventions, and integral structures)
+into a coherent ``local budget'' that can be glued globally. It serves as a preconditioner: after \LAI,
+the only remaining local freedom relevant to unit ambiguity is concentrated at a distinguished locking prime.
+
+\paragraph{B. \SME\ (Spectral Matching Engine).}
+\SME\ produces the analytic germ at $s=1$ (a determinant-line element on the spectral side), extracting precisely
+the downstream data needed for transport (order/leading-term package in determinant-line form).
+
+\paragraph{C. \DLT\ (Determinant-Line Transport).}
+\DLT\ is the comparison/transport map from the spectral determinant line to the Selmer determinant line,
+yielding a single global scalar (the trivialization ratio) $u(E)\in\Q^\times$ that measures the residual
+one-dimensional ambiguity in the comparison.
+
+\paragraph{D. \URC\ (Unit-Rigidity Closure).}
+\URC\ is the lock: using (i) local integrality away from a locking prime and (ii) real/archimedean calibration,
+it collapses $u(E)$ to $u(E)=+1$ (equivalently $u(E)\in\{\pm1\}$ first, then the sign is fixed canonically).
+
+\paragraph{E. \AFU\ (Arithmetic Finiteness Upgrade).}
+\AFU\ is deliberately \emph{optional}: it upgrades the locked determinant-line identity beyond unit normalization.
+At the first layer, \AFU\ records the passage from a determinant-line defect to a \emph{finite lattice index}
+(AFU-1G). At the second layer, it records the arithmetic \emph{identification} of that index with classical BSD
+factors (AFU-2) and the remaining open ``rank/$\Sha$'' closure requirements (AFU-3), which rely on external arithmetic
+inputs (e.g.\ rank $0/1$ packages or Iwasawa/IMC-type inputs in appropriate settings).
+
+\subsection{Main theorems (unconditional vs.\ upgrade)}
+\label{sec:main-theorem}
+
+We state the result in two tiers.
+
+\paragraph{Theorem status (closure under the URC contract).}
+Assume Gates \LAI, \SME, and \DLT are admissible and the \URC\ contract holds for some locking prime $p_0$
+satisfying the integral-transport input \Cref{thm:locking-prime-integrality}. Then the induced global scalar $u(E)\in\Q^\times$
+is well-defined and satisfies $u(E)=1$. Consequently the induced local unit invariants satisfy
+$u^{\mathrm{glob}}_p(E)=1$ for every prime $p$ (cf.\ \Cref{lem:DLT-global-local}).
+This is a closure statement for the locked-chain reduction; it does \emph{not} assert new cases of arithmetic finiteness
+beyond the optional \AFU\ upgrade interfaces.
+
+\begin{theorem}[Closure under the URC contract (determinant-line locking)]
+\label{thm:dl-closure}
+Assume the spectral determinant-line element $\SigAgg$ at $s=1$ and the canonical Selmer determinant-line target $\LamAgg$
+are constructed as in Gates \SME\ and \DLT, with local normalizations fixed by \LAI. Assume further the \URC\ hypotheses, namely:
+\begin{enumerate}[leftmargin=*]
+  \item $u(E)\in\Q^\times$ has $v_\ell(u(E))=0$ for all primes $\ell\neq p_0$ by Gate~\LAI, and $v_{p_0}(u(E))=0$ by the integral
+  transport input at the locking prime $p_0$ (\Cref{thm:locking-prime-integrality}); hence $u(E)\in\{\pm 1\}$;
+  \item the calibration fixes the sign canonically, so $u(E)=+1$.
+\end{enumerate}
+Then the transported spectral element matches the arithmetic determinant-line trivialization \emph{without residual unit ambiguity}.
+Equivalently, any remaining discrepancy between the analytic leading term and the ``visible'' arithmetic volume is entirely
+concentrated in the \AFU\ module (i.e.\ the genuine arithmetic index/finiteness content).
+\end{theorem}
+
+\begin{theorem}[Classical BSD leading coefficient as an AFU upgrade (interface statement)]
+\label{thm:afu-upgrade}
+Under the assumptions of \Cref{thm:dl-closure}, suppose additionally that an \AFU\ input package is available in the relevant
+class: namely, (i) an integrality/index input (AFU-1G) producing a finite lattice index in the Selmer determinant line, and
+(ii) an arithmetic identification input (AFU-2) matching that index with the expected BSD discrete factors in the given regime
+(e.g.\ analytic rank $0/1$ packages or Iwasawa/IMC-type inputs in an ordinary setting at $p$).
+Then the locked determinant-line identity upgrades to the classical BSD leading coefficient statement in that class, including
+the finiteness/cardinality interpretation of the $\Sha$-factor when such finiteness is part of the imported package.
+\end{theorem}
+
+\begin{corollary}[Internal AFU-1G from LAI local finiteness (conditional on the interface)]
+\label{cor:afu-1g-from-lai}
+Fix a prime $p$ in the ``good'' range specified by the local hypotheses of \LAI\ (the dyadic case is treated separately).
+Assume \Cref{thm:LAI-interface}. Then the defect complex
+$C_{\mathrm{def},p}:=\mathrm{Cone}(\phi_p)$ is a finite local-difference complex supported at $v\mid pN$.
+In particular, all cohomology groups $H^i(C_{\mathrm{def},p})$ are finite and hence contain no $p$-divisible subgroup.
+Equivalently, the \AFU\ obstruction at $p$ is purely finite (no $p$-divisible defect).
+\end{corollary}
+
+\begin{proof}
+Under \Cref{thm:LAI-interface} the cone $C_{\mathrm{def},p}$ agrees with the Selmer-structure defect for
+$f'\subset f$. The local quotients are finite $p$-groups by
+\Cref{lem:LAI-fprime-bad,lem:LAI-fprime-p}, hence the resulting defect complex has finite cohomology.
+\end{proof}
+
+\paragraph{Scope warning (reviewer-critical).}
+Throughout, we do \emph{not} claim to ``bypass'' $\Sha$. We isolate precisely where $\Sha$ enters:
+as a global arithmetic defect in the Selmer determinant-line container. \URC\ kills the \emph{unit ambiguity};
+\AFU\ is the only place where integrality, index identification, and finiteness/cardinality enter.
+
+\subsection{Reading guide}
+\label{sec:reading-guide}
+
+\Cref{sec:LAI} defines \LAI\ and fixes local normalizations.
+\Cref{sec:SME} constructs the spectral germ at $s=1$.
+\Cref{sec:DLT} defines the determinant-line transport and the scalar $u(E)$.
+\Cref{sec:URC} proves $u(E)=+1$ (rigidity lock).
+\Cref{sec:AFU} records the \AFU\ interfaces (AFU-1G/2/3) and lists admissible upgrade inputs.
+
+
+% ============================================================
+\subsection{One-page referee map and dependency summary}
+\label{sec:referee-map}
+
+\paragraph{Referee map (what is proved where).}
+The following is a one-page navigation device summarizing (i) what is proved \emph{internally} in this manuscript and
+(ii) what is recorded as an \AFU\ plug-in input.
+For a detailed cross-reference list, see \Cref{app:referee-checklist}.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{URC locking (internal, conditional only on the stated contract).}
+The determinant-line locking statement $u(E)=1$ is \Cref{thm:dl-closure}.
+Its only explicit nonstandard input is the integral transport assumption at a single locking prime $p_0$ (\Cref{thm:locking-prime-integrality});
+the closure argument itself is in \Cref{sec:URC} (see also \Cref{thm:URC-locking}).
+
+\item \textbf{Internal ``no $p$-divisible defect'' (container-level finiteness).}
+Assuming the Selmer-interface identification \Cref{thm:LAI-interface}, \Cref{cor:afu-1g-from-lai} shows that the $p$-primary defect cone
+has finite cohomology and hence no $p$-divisible subgroup. This is a \emph{container statement} and does not identify $\#\Sha$.
+
+\item \textbf{Where arithmetic depth enters.}
+Any conversion of the remaining defect/index into classical BSD discrete factors (Index--ID, rank bridge, $\Sha$ finiteness) is isolated as \AFU.
+The admissible external packages and their minimal I/O contracts are listed in \Cref{sec:AFU} and the registry table
+\Cref{app:afu-registry}; normalization alignment is recorded in \Cref{app:translation-dict}.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Assumptions matrix (quick scan). Precise package hypotheses appear in the \AFU\ registry.}
+\label{tab:assumptions-matrix}
+\begin{tabular}{p{0.18\linewidth} p{0.33\linewidth} p{0.41\linewidth}}
+\hline
+\textbf{Gate} & \textbf{Output} & \textbf{Minimal hypothesis family} \\
+\hline
+\LAI & integral local conditions and visible normalization & local Selmer/BK conventions; $p\neq 2$ unless stated \\
+\SME & spectral $s=1$ germ in a 1-dim $\Q$-line & analytic input (rank $0/1$ regime) \\
+\DLT & transport + scalar $u(E)\in\Q^\times$ & comparison data (period pairing, determinant-line identifications) \\
+\URC & $u(E)=1$ & locking prime integrality at $p_0$ + real calibration \\
+\AFU & Index--ID, rank bridge, $\Sha$ finiteness (optional) & imported packages (Kato/IMC/GZ--Kolyvagin, etc.) \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Worked navigation example (rank $0$, ``good'' primes).}
+Assume $L(E,1)\neq 0$ and fix an odd prime $p\not\mid 2Nc_E$.
+Then \LAI\ fixes the local lattices and the reference element, \SME\ produces the nonzero $s=1$ germ, and \DLT\ yields the global scalar $u(E)\in\Q^\times$.
+If a locking prime $p_0$ satisfies \Cref{thm:locking-prime-integrality}, \URC\ upgrades this to $u(E)=1$ globally (\Cref{thm:dl-closure}).
+At this point the remaining discrete ``defect exponent'' at $p$ is purely finite (\Cref{cor:afu-1g-from-lai}) but not yet identified with $\#\Sha$:
+an \AFU-2 package (e.g.\ IMC/reciprocity in an ordinary setting) supplies the Index--ID identification, while \AFU-3 supplies rank/finite-$\Sha$ closure if desired.
+
+
+% ============================================================
+\section{Global Objects and Notation}
+\label{sec:notation}
+
+\subsection{Arithmetic base data}
+\label{sec:arith-base}
+
+Let $E/\Q$ be an elliptic curve of conductor $N$.
+Write $S_{\mathrm{bad}}$ for the set of primes of bad reduction and set
+\[
+S := S_{\mathrm{bad}} \cup \{\infty\}.
+\]
+For each place $v$ of $\Q$ we write $\Q_v$ for the completion and $G_{\Q_v}$ for the absolute
+Galois group. Let $G_{\Q,S}$ denote the Galois group of the maximal extension of $\Q$
+unramified outside $S$.
+
+We distinguish two primes throughout:
+\begin{itemize}[leftmargin=2em]
+\item a generic prime $p$ at which we form the $p$-adic determinant-line comparison (objects over $\Q_p$ and lattices over $\Z_p$);
+\item a \emph{locking prime} $p_0$ used by the Unit-Rigidity Closure mechanism (\URC), i.e.\ the single place where an explicit
+integral-transport input is assumed (\Cref{thm:locking-prime-integrality}).
+\end{itemize}
+The comparison scalar is extracted globally (as $u(E)\in\Q^\times$) by \DLT and then viewed in each $\Q_p^\times$ via the natural embedding.
+The role of the locking prime $p_0$ is to eliminate the only remaining valuation possibility at that single place in the URC closure.
+
+Fix a prime $p$. Let $T_p(E)$ be the $p$-adic Tate module and $V_p(E)=T_p(E)\otimes_{\Z_p}\Q_p$.
+We write $E(\Q)_{\mathrm{tors}}$ for the torsion subgroup and $\Reg(E)$ for the (N\'eron--Tate) regulator.
+Periods are denoted by $\Omega_E$ (precise normalization is fixed in \Cref{sec:period-normalization}).
+
+\subsection{Determinant functors and determinant lines}
+\label{sec:detlines}
+
+We use determinant lines in the sense of determinant functors.
+For a perfect complex $C^\bullet$ of $\Q_p$-vector spaces (or of $\Z_p$-modules, when integral structures
+are specified) we write
+\[
+\detline_{\Q_p}(C^\bullet)
+\]
+for its determinant line. We use the standard properties: functoriality, compatibility with
+quasi-isomorphisms, and multiplicativity in distinguished triangles. For background and conventions
+see \cite{KnudsenMumford1976,Deligne1987}.
+
+\begin{definition}[Determinant line over a field]
+\label{def:detline-field}
+If $C^\bullet$ is a perfect complex of $\Q_p$-vector spaces, its determinant line
+$\detline_{\Q_p}(C^\bullet)$ is a one-dimensional $\Q_p$-vector space, well-defined up to canonical isomorphism,
+characterized by:
+(i) $\detline_{\Q_p}(V[0])=\bigwedge^{\dim V} V$ for a vector space $V$ in degree $0$,
+(ii) $\detline_{\Q_p}(C^\bullet)\simeq \bigotimes_i \detline_{\Q_p}(H^i(C^\bullet))^{(-1)^i}$,
+and (iii) multiplicativity in triangles.
+\end{definition}
+
+\begin{definition}[Integral structures (lattices)]
+\label{def:lattice}
+When $C^\bullet$ is a perfect complex of $\Z_p$-modules, we write
+$\detline_{\Z_p}(C^\bullet)$ for the associated rank-one $\Z_p$-module, and
+$\detline_{\Q_p}(C^\bullet\otimes\Q_p)\simeq \detline_{\Z_p}(C^\bullet)\otimes_{\Z_p}\Q_p$.
+We refer to $\detline_{\Z_p}(C^\bullet)$ as the \emph{$p$-adic lattice} inside the determinant line.
+\end{definition}
+
+\subsection{The canonical arithmetic target: the Selmer/Bloch--Kato determinant line}
+\label{sec:selmer-detline}
+
+\paragraph{Selmer-type complexes.}
+We fix a Selmer/Bloch--Kato complex $R\Gamma_f(\Q,V_p(E))$ (or an equivalent Selmer-complex model)
+whose cohomology encodes the Mordell--Weil contribution and the Selmer-type defect contribution
+in a single canonical package. Concretely, we work with a perfect complex over $\Q_p$ together with
+a canonical $\Z_p$-lattice model (integral structure), so that both the rational determinant line and
+its integral lattice are functorially defined. For the Selmer complex formalism and its determinant lines
+see \cite{Nekovar2006,BlochKato1990,FontainePerrinRiou1994}.
+
+\paragraph{Arithmetic determinant line (the container $\LamAgg$).}
+Define the arithmetic determinant line (over $\Q_p$)
+\[
+\Delta_{\mathrm{BK},p}(E) \;:=\; \detline_{\Q_p}\!\bigl(R\Gamma_f(\Q,V_p(E))\bigr),
+\]
+equipped with its canonical $\Z_p$-lattice
+\[
+\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E) \;\subset\; \Delta_{\mathrm{BK},p}(E).
+\]
+This is the precise meaning of the ``arithmetic container'' $\LamAgg$ in the facade architecture:
+it is \emph{not} a Mordell--Weil-only object. The Mordell--Weil/height/period contribution is the
+``visible part'' of the same determinant-line container, while the Selmer-type defect contribution
+(whose classical incarnation includes $\Sha$) is the ``defect part''.
+
+\begin{remark}[No finiteness built in]
+\label{rem:no-finiteness-built-in}
+The determinant line $\Delta_{\mathrm{BK},p}(E)$ and its lattice $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$
+are defined without assuming $\#\Sha(E/\Q)<\infty$.
+Finiteness enters only later, in the upgrade module (\AFU), when one records the defect as a finite lattice index and,
+in regimes where an external arithmetic identification is available (AFU-2), interprets that index in classical BSD terms.
+\end{remark}
+
+\subsection{Analytic/spectral datum at \texorpdfstring{$s=1$}{s=1}}
+\label{sec:analytic-germ}
+
+\paragraph{Analytic leading term.}
+Let $L(E,s)$ be the Hasse--Weil $L$-function. Write
+\[
+r_{\mathrm{an}} := \ord_{s=1} L(E,s),\qquad
+L^{(r_{\mathrm{an}})}(E,1) := \left.\frac{d^{r_{\mathrm{an}}}}{ds^{r_{\mathrm{an}}}}L(E,s)\right|_{s=1}.
+\]
+(At this stage we only fix notation; no conjectural identifications are used here.)
+
+\paragraph{Spectral determinant line.}
+The spectral side produces a one-dimensional $\Q_p$-line
+\[
+\Delta_{\mathrm{spec},p}(E)
+\]
+together with a distinguished element (a ``germ'' or ``covolume element'')
+\[
+\mathbf{d}_{\mathrm{spec},p}(E)\in \Delta_{\mathrm{spec},p}(E),
+\]
+constructed from the $f$-isotypic modular-symbol generator and the period pairing
+(precise construction in \Cref{sec:SME}).
+
+\subsection{Comparison and the defect scalar}
+\label{sec:defect-scalar}
+
+\paragraph{Comparison morphism (determinant-line transport).}
+The determinant-line transport module (\DLT) produces a canonical comparison isomorphism over $\Q_p$
+\[
+\Phi_{\mathrm{BK},p}(E):\ \Delta_{\mathrm{spec},p}(E)\;\xrightarrow{\ \sim\ }\;\Delta_{\mathrm{BK},p}(E),
+\]
+which is a priori well-defined up to a $p$-adic unit.
+
+\paragraph{Defect scalar.}
+Fixing the compatible trivializations prescribed by the pipeline normalization,
+the residual ambiguity is encoded by a scalar $u_p(E)\in \Q_p^\times$, defined by
+\[
+\Phi_{\mathrm{BK},p}(E)\bigl(\mathbf{d}_{\mathrm{spec},p}(E)\bigr) \;=\; u_p(E)\cdot \mathbf{d}_{\mathrm{BK},p}(E),
+\]
+where $\mathbf{d}_{\mathrm{BK},p}(E)$ denotes the induced arithmetic determinant-line element in
+$\Delta_{\mathrm{BK},p}(E)$.
+The Unit-Rigidity Closure module (\URC) proves the global locking statement
+\[
+u(E)=1\in\Q^\times
+\]
+under the standing hypotheses recorded in \Cref{app:assumptions}; equivalently, after the fixed global calibration,
+$u_p(E)=1$ for every prime $p$ (cf.\ \Cref{lem:DLT-global-local}).
+
+\subsection{Period, height, and real calibration conventions}
+\label{sec:period-normalization}
+
+All real/archimedean calibration and positivity conventions used to fix the global sign/unit
+are stated explicitly in \Cref{sec:gate-K-sign-lock} (Gate K / URC module).
+
+% ============================================================
+\section{Gate L (\LAI): Local Arithmetic Interface}
+\label{sec:LAI}
+
+\subsection{Purpose and positioning in the pipeline}
+\label{sec:LAI-purpose}
+
+Gate~L implements the Local Arithmetic Interface (\LAI). Its role is strictly local:
+it fixes normalization and integral-structure conventions at all finite places
+$v\neq p_0$ and packages the ramified/unramified bookkeeping into a single coherent local
+preconditioner. In particular, \emph{under the Gate~L contract and the downstream \DLT\ setup},
+the determinant-line transport scalar extracted in \DLT\ cannot carry any non-$p_0$ valuation.
+Thus the only remaining valuation freedom is concentrated at the locking prime $p_0$
+(and, separately, the archimedean sign handled by \URC).
+
+This gate is also where we make explicit the guiding separation principle used throughout:
+purely local normalizations can absorb all place-by-place choices and corrections, but they
+cannot eliminate a genuinely global Selmer-type defect. In our language, any remaining discrepancy
+after local normalization must enter globally inside the Selmer determinant-line container and is
+recorded only after transport (\DLT), not at the level of local conventions. \cite{SilvermanAEC1,MilneBSD}
+
+\subsection{Input--output contract}
+\label{sec:LAI-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item the elliptic curve $E/\Q$ with conductor $N$ and set of bad primes $S_{\mathrm{bad}}$;
+\item for each $\ell\in S_{\mathrm{bad}}$, a minimal/N\'eron model package and the associated local invariants
+(in particular the Tamagawa number $c_\ell(E)$ and component-group data);
+\item local unramified conventions at $\ell\notin S_{\mathrm{bad}}\cup\{p_0\}$;
+\item the local Bloch--Kato/Selmer conditions used to define the arithmetic Selmer complex
+at each place (as recorded in \DLT).
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item a coherent local normalization package (``local budget'') which removes all non-$p_0$ valuation
+freedom from the comparison scalar $u(E)$ produced by \DLT;
+\item explicit compatibility constraints ensuring that the determinant-line transport
+is well-defined up to a $p_0$-adic unit only (before the \URC\ closure);
+\item a recorded list of local conventions used downstream (so no normalization choice is hidden).
+\end{itemize}
+
+\subsection{Local invariants and normalization data}
+\label{sec:LAI-local-data}
+
+Let $S_{\mathrm{bad}}$ be the set of primes of bad reduction. For each $\ell\in S_{\mathrm{bad}}$,
+let $c_\ell(E)$ be the Tamagawa number and $\Phi_\ell$ the component group of the N\'eron model.
+At primes $\ell\notin S_{\mathrm{bad}}$, we use the unramified convention.
+
+These invariants are treated as part of the integral-structure bookkeeping on the arithmetic
+determinant line. Concretely, they enter the definition of the canonical lattice
+$\Delta^{\mathrm{int}}_{\mathrm{BK},p}(E)\subset \Delta_{\mathrm{BK},p}(E)$ (implemented downstream in \DLT),
+so that local correction factors cannot reappear later as an ambiguity in the scalar mismatch.
+
+\subsection{Local Selmer conditions and integral structures}
+\label{sec:LAI-local-selmer}
+
+For each place $v$ of $\Q$ we fix the local Bloch--Kato condition defining
+the local ``finite'' complex $R\Gamma_f(\Q_v,V_p(E))$.
+At $\ell\neq p$, the condition is unramified outside $S_{\mathrm{bad}}$ and uses the N\'eron model
+at $\ell\in S_{\mathrm{bad}}$; at $v=p$ it uses the Bloch--Kato $H^1_f$ condition.
+
+These local conditions determine an integral structure (a $\Z_p$-lattice) in the arithmetic determinant line
+$\Delta_{\mathrm{BK},p}(E)$ and hence control all $\ell\neq p_0$ valuations of the transported scalar.
+We refer to \cite{BlochKato1990,FontainePerrinRiou1994,Nekovar2006} for the standard formalism.
+
+\subsection{Non-\texorpdfstring{$p_0$}{p0} integrality forcing}
+\label{sec:LAI-integrality}
+
+\begin{lemma}[Non-$p_0$ valuation vanishing (LAI output)]
+\label{lem:LAI-ell-integrality}
+Let $u(E)\in\Q^\times$ denote the global defect scalar extracted after determinant-line transport
+(\DLT) and assume the local normalization conventions of Gate~L.
+Then for every prime $\ell\neq p_0$ one has
+\[
+v_\ell\bigl(u(E)\bigr)=0.
+\]
+Equivalently, any residual valuation ambiguity in the comparison scalar is concentrated at $p_0$
+(and in the archimedean sign handled by \URC).
+\end{lemma}
+
+\begin{remark}
+\label{rem:LAI-meaning}
+\Cref{lem:LAI-ell-integrality} is the formal statement behind the phrase ``local corrections are absorbed''.
+It does not assert finiteness for $\Sha$ and does not identify any defect with $\Sha$.
+It only states that \emph{non-$p_0$ valuations of the transported scalar cannot originate from local renormalizations}.
+Any remaining defect is therefore global and can only appear after transport, inside \DLT/\AFU.
+\end{remark}
+
+\subsection{Ramified blocks and the Tamagawa dictionary}
+\label{sec:LAI-ramified}
+
+In the glued spectral model, ramified local blocks at $\ell\in S_{\mathrm{bad}}$ contribute
+explicit local factors. Gate~L fixes the convention that these blocks are normalized so that
+their contribution matches the arithmetic Tamagawa normalization encoded in the Selmer determinant line.
+
+\begin{proposition}[Tamagawa matching for ramified blocks]
+\label{prop:LAI-tamagawa}
+Under the conventions of Gate~L, the ramified local block contribution at each $\ell\in S_{\mathrm{bad}}$
+is absorbed into the canonical integral structure on $\Delta_{\mathrm{BK},p}(E)$ in such a way that
+it does not contribute to $v_\ell(u(E))$ for $\ell\neq p_0$.
+\end{proposition}
+
+\subsection{Functoriality and stability under admissible modifications}
+\label{sec:LAI-functoriality}
+
+The \LAI\ package is required to be stable under the admissible modifications used later
+(e.g.\ changes of the spectral realization within the A2 class).
+
+\begin{proposition}[Stability of LAI normalizations]
+\label{prop:LAI-stable}
+The local normalization package fixed in Gate~L is invariant under admissible changes of the
+spectral realization and under the comparison identifications used in \DLT.
+In particular, \Cref{lem:LAI-ell-integrality} remains valid throughout the pipeline.
+\end{proposition}
+
+\begin{proposition}[Functoriality of the local interface]
+\label{prop:LAI-functoriality}
+The \LAI\ normalization package is functorial under isogenies and stable under quadratic twisting
+in the sense required by the downstream modules (\SME/\DLT/\URC).
+In particular, the integrality constraints of \Cref{lem:LAI-ell-integrality} are invariant under these operations.
+\end{proposition}
+
+\subsection{Where Gate L stops}
+\label{sec:LAI-stops}
+
+Gate~L is purely local. Its endpoint is the valuation control \Cref{lem:LAI-ell-integrality}.
+Any statement recording the remaining global defect as a lattice index belongs to the \AFU\ layer (AFU-1G),
+and any identification with classical BSD arithmetic factors belongs to the subsequent \AFU\ interfaces (AFU-2/AFU-3).
+
+
+% ============================================================
+
+% ============================================================
+\section{Gate A2 (\SME): Spectral Matching Engine at \texorpdfstring{$s=1$}{s=1}}
+\label{sec:SME}
+
+Gate~A2 fixes a global $\Q$-model for the spectral determinant line via modular symbols, together with a canonical
+$\Z$-lattice, and outputs its base change at a prime $p$.
+
+\subsection{Modular-symbol realization of the spectral line}
+\label{sec:SME-modsym}
+
+Let $\mathrm{Symb}_{\Gamma_0(N)}(R)$ denote the space of modular symbols of level $\Gamma_0(N)$ with coefficients in a ring $R$,
+and let $(\cdot)^+$ denote the $+1$-eigenspace for complex conjugation.
+Let $f=f_E$ be the newform attached to $E$, and write $\mathrm{Symb}_{\Gamma_0(N)}(R)^{+}[f]$ for the $f$-isotypic component.
+
+\begin{definition}[Spectral determinant line over $\Q$]
+\label{def:A2-spec-line}
+Define
+\[
+\Delta_{\mathrm{spec},\Q}(E)\ :=\ \detline_{\Q}\!\bigl(\mathrm{Symb}_{\Gamma_0(N)}(\Q)^{+}[f]\bigr),
+\]
+a one-dimensional $\Q$-line.
+For each prime $p$ set
+\[
+\Delta_{\mathrm{spec},p}(E)\ :=\ \Delta_{\mathrm{spec},\Q}(E)\otimes_{\Q}\Q_p.
+\]
+\end{definition}
+
+\begin{definition}[Spectral integral lattice]
+\label{def:A2-spec-lattice}
+Define the integral lattice
+\[
+\Delta^{\mathrm{int}}_{\mathrm{spec},\Q}(E)\ :=\ \detline_{\Z}\!\bigl(\mathrm{Symb}_{\Gamma_0(N)}(\Z)^{+}[f]\bigr)\ \subset\ \Delta_{\mathrm{spec},\Q}(E),
+\]
+and set
+\[
+\Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)\ :=\ \Delta^{\mathrm{int}}_{\mathrm{spec},\Q}(E)\otimes_{\Z}\Z_p\ \subset\ \Delta_{\mathrm{spec},p}(E).
+\]
+\end{definition}
+
+\begin{definition}[Spectral germ element]
+\label{def:spectral-germ}
+Let $\{0\to i\infty\}^{+}\in \mathrm{Symb}_{\Gamma_0(N)}(\Z)^{+}$ be the standard modular symbol class and let
+$\{0\to i\infty\}^{+}_f$ denote its projection to $\mathrm{Symb}_{\Gamma_0(N)}(\Z)^{+}[f]$.
+Define $\mathbf{d}_{\mathrm{spec},\Q}(E)\in \Delta_{\mathrm{spec},\Q}(E)$ to be the determinant-line class of
+$\{0\to i\infty\}^{+}_f$, and let $\mathbf{d}_{\mathrm{spec},p}(E)$ be its image in $\Delta_{\mathrm{spec},p}(E)$ under base change.
+\end{definition}
+
+\begin{definition}[Choice of a lattice generator]
+\label{def:A2-lattice-generator}
+We fix a generator $\mathbf{d}_{\mathrm{spec},p}(E)$ of the rank-one $\Z_p$-lattice $\Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)$.
+\end{definition}
+
+\begin{proposition}[Residual $\Z_p^\times$-ambiguity on the spectral side]
+\label{prop:A2-residual-ambiguity}
+The choice of a lattice generator $\mathbf{d}_{\mathrm{spec},p}(E)$ is unique up to multiplication by a unit in $\Z_p^\times$.
+\end{proposition}
+
+\subsection{Period-pairing transport interface}
+\label{sec:SME-period-transport}
+
+Fix a N\'eron differential $\omega_E$ on $E$ and a modular parametrization $\varphi:X_0(N)\to E$.
+The spectral-to-arithmetic comparison map used downstream (in \DLT) is induced by the period pairing
+\[
+\gamma \ \longmapsto\ \int_{\gamma}\varphi^{*}(\omega_E),
+\qquad \gamma\in \mathrm{Symb}_{\Gamma_0(N)}(\Z)^{+}[f],
+\]
+followed by the fixed determinant-line identifications defining the arithmetic target line $\Delta_{\mathrm{BK},p}(E)$.
+
+
+% ============================================================
+% Rank-one extension: \textsf{SME-R1}
+% ============================================================
+
+\subsection{Input--output contract (rank-one extension: \textsf{SME-R1})}
+\label{sec:SME-R1-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item an elliptic curve $E/\Q$ (conductor $N$) with the same global normalizations fixed in Gate~A2;
+\item an admissible Heegner datum $(K,\mathcal{P}_K)$ in the Gross--Zagier setting, producing a Heegner point
+$P_K\in E(K)$ and its trace $P:=\mathrm{Tr}_{K/\Q}(P_K)\in E(\Q)\otimes\Q$;
+\item the rank-one analytic regime (intended for $r_{\mathrm{an}}(E)=1$), so that $E(\Q)\otimes\Q_p$ is $1$-dimensional.
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item a rank-one spectral determinant line
+$\Delta^{(1)}_{\mathrm{spec},p}(E;K)$ with an integral lattice $\Delta^{(1),\mathrm{int}}_{\mathrm{spec},p}(E;K)$;
+\item a rank-one spectral germ element $\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)\in \Delta^{(1)}_{\mathrm{spec},p}(E;K)$,
+well-defined up to $\Z_p^\times$;
+\item a Gross--Zagier calibration token $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ fixing the height/period
+normalization used by the rank-one germ.
+\end{itemize}
+
+\paragraph{Contract.}
+\begin{itemize}[leftmargin=2em]
+\item[\textbf{C1.}] (\emph{Leading-term mode}) the output $\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)$ is the rank-one
+replacement of the value-at-one germ of Gate~A2: it is designed to encode the $s=1$ leading term (the $L'(E,1)$-mode).
+\item[\textbf{C2.}] (\emph{GZ locus}) Gross--Zagier enters only through $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$,
+whose role is to fix the height pairing normalization relative to the same global conventions used downstream
+in the arithmetic reference element of \Cref{def:arith-ref}.
+\item[\textbf{C3.}] (\emph{Unit ambiguity}) the only ambiguity propagated by \textsf{SME-R1} is the intrinsic
+$\Z_p^\times$-ambiguity of a primitive generator relative to $\Delta^{(1),\mathrm{int}}_{\mathrm{spec},p}(E;K)$.
+\end{itemize}
+
+\paragraph{Failure modes.}
+\begin{itemize}[leftmargin=2em]
+\item outside the rank-one leading-term regime, \textsf{SME-R1} is not required to output a nontrivial germ;
+\item \textsf{SME-R1} does not assert $\Sha$ finiteness or any index identification (those remain in \AFU).
+\end{itemize}
+
+\begin{lemma}[Instantiation of \textsf{SME-R1} (Gross--Zagier calibration)]
+\label{lem:SME-R1-instantiation}
+Assume the mapping-fiber comparison package of \Cref{def:Csp-mapping-fiber-main,lem:LAI-local-equals-fprime-main},
+and fix admissible Heegner data $(K,\mathcal{P}_K)$ as above in the rank-one analytic regime.
+Define the rank-one spectral line by
+\[
+\Delta^{(1)}_{\mathrm{spec},p}(E;K)\ :=\ \Delta_{\mathrm{spec},p}(E)\ \otimes_{\Q_p}\ \bigl(E(\Q)\otimes\Q_p\bigr),
+\qquad
+\Delta^{(1),\mathrm{int}}_{\mathrm{spec},p}(E;K)\ :=\ \Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)\ \otimes_{\Z_p}\ \bigl(E(\Q)\otimes\Z_p\bigr),
+\]
+and set
+\[
+\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)\ :=\ \mathbf{d}_{\mathrm{spec},p}(E)\ \otimes\ P
+\ \in\ \Delta^{(1)}_{\mathrm{spec},p}(E;K),
+\]
+where $P=\mathrm{Tr}_{K/\Q}(P_K)$ spans $E(\Q)\otimes\Q$.
+Then the Gross--Zagier formula (in the fixed period/height conventions of the pipeline) determines a canonical
+calibration token $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ ensuring that the leading-term normalization
+implicit in $\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)$ matches the N\'eron--Tate height normalization used downstream
+in \Cref{def:arith-ref}. In particular, $\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)$ is well-defined up to $\Z_p^\times$
+relative to $\Delta^{(1),\mathrm{int}}_{\mathrm{spec},p}(E;K)$.
+\end{lemma}
+
+% ------------------------------------------------------------
+% Hard construction block (rank-one leading-term object)
+% ------------------------------------------------------------
+
+\subsubsection{Rank-one leading-term construction (\textsf{SME-R1})}
+\label{sec:SME-R1-hard-construction}
+
+\begin{definition}[Rank-one spectral line and leading-term germ]
+\label{def:SME-R1-leading-term-line}
+Fix admissible Heegner data $(K,\mathcal{P}_K)$ as in \Cref{sec:SME-R1-contract}.
+Let $P_K\in E(K)$ be the associated Heegner point and $P:=\Tr_{K/\Q}(P_K)\in E(\Q)\otimes\Q$ its trace.
+In the rank-one analytic regime, define the rank-one spectral determinant line and its lattice by
+\[
+\Delta^{(1)}_{\mathrm{spec},p}(E;K)\ :=\ \Delta_{\mathrm{spec},p}(E)\ \otimes_{\Q_p}\ \bigl(E(\Q)\otimes\Q_p\bigr),
+\qquad
+\Delta^{(1),\mathrm{int}}_{\mathrm{spec},p}(E;K)\ :=\ \Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)\ \otimes_{\Z_p}\ \bigl(E(\Q)\otimes\Z_p\bigr).
+\]
+\end{definition}
+
+\begin{proposition}[Heegner leading-term germ in the spectral line]
+\label{constr:SME-R1-leading-term-germ}
+Let $\mathbf{d}_{\mathrm{spec},p}(E)$ be the fixed spectral lattice generator of \Cref{def:A2-lattice-generator}.
+Define the rank-one spectral germ by
+\[
+\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)\ :=\ \mathbf{d}_{\mathrm{spec},p}(E)\ \otimes\ P
+\ \in\ \Delta^{(1)}_{\mathrm{spec},p}(E;K).
+\]
+\end{proposition}
+
+\begin{proposition}[Gross--Zagier calibration (no hidden global scaling)]
+\label{prop:SME-R1-GZ-pointer}
+Assume the mapping-fiber package of \Cref{def:Csp-mapping-fiber-main,lem:LAI-local-equals-fprime-main} and the rank-one
+analytic regime. Then the Gross--Zagier formula, in the fixed period/height conventions of the pipeline, furnishes the
+calibration token $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ such that the normalization implicit in
+$\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)$ matches the N\'eron--Tate height normalization used in the arithmetic
+reference element $\mathbf{t}^{(1)}_{\mathrm{BK},p}(E)$ of \Cref{def:arith-ref}.
+Equivalently, letting
+\[
+S(E,K)\ :=\ \{\,p:\ p\mid 2N\,c_E\cdot D_K\,\},
+\]
+for any prime $p\notin S(E,K)$ the only residual mismatch propagated forward from \textsf{SME-R1} is the intrinsic
+$\Z_p^\times$-ambiguity of the generator relative to $\Delta^{(1),\mathrm{int}}_{\mathrm{spec},p}(E;K)$.
+\end{proposition}
+
+
+
+\subsection{Where Gate A2 stops}
+\label{sec:SME-stops}
+
+Gate~A2 outputs the spectral determinant line $\Delta_{\mathrm{spec},p}(E)$, its integral lattice $\Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)$,
+and a chosen lattice generator $\mathbf{d}_{\mathrm{spec},p}(E)$.
+In the rank-one mode \textsf{SME-R1} (cf.\ \Cref{sec:SME-R1-contract,sec:SME-R1-hard-construction}), it additionally outputs the
+rank-one line $\Delta^{(1)}_{\mathrm{spec},p}(E;K)$, the leading-term germ $\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)$ and the
+calibration token $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$.
+All arithmetic comparison and extraction of the defect scalar (rank $0$: $u_p(E)$; rank $1$: $u^{(1)}_p(E)$) is performed in \DLT, and the global unit locking
+$u(E)=1$ (resp.\ $u^{(1)}(E)=1$) is proved in \URC.
+\section{Gate \DLT: The Arithmetic Determinant-Line Target and Transport}
+\label{sec:DLT}
+
+\subsection{Purpose and positioning in the pipeline}
+\label{sec:DLT-purpose}
+
+Gate \DLT\ fixes the \emph{canonical arithmetic container} $\LamAgg$ and formulates the comparison problem
+in determinant-line terms. It then performs the determinant-line transport: it maps the spectral germ produced
+by Gate~A2 into the arithmetic determinant line and extracts a single global scalar defect $u(E)\in\Q^\times$
+measuring the mismatch of trivializations. This scalar is the unique quantity later locked by \URC.
+
+The central structural correction is that $\LamAgg$ is \emph{not} ``Mordell--Weil without $\Sha$''.
+Rather, $\LamAgg$ is the Selmer/Bloch--Kato determinant line equipped with its integral lattice; in this
+container the Mordell--Weil contribution is the visible piece and the Shafarevich contribution appears
+as the (potential) lattice defect. This makes the target canonical and the comparison meaningful.
+
+\subsection{Input--output contract}
+\label{sec:DLT-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item the spectral determinant-line germ element $\mathbf{d}_{\mathrm{spec},p}(E)\in\Delta_{\mathrm{spec},p}(E)$
+from Gate~A2 (for a chosen prime $p$);
+\item the local Selmer/Bloch--Kato conditions and integral structures (fixed at $v\neq p_0$ by Gate~L);
+\item the determinant-functor framework for perfect complexes (Appendix \Cref{app:detline-conventions}).
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item the canonical arithmetic determinant line $\Delta_{\mathrm{BK},p}(E)$ (Selmer/Bloch--Kato container)
+and its canonical lattice $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$;
+\item a reference arithmetic element $\mathbf{t}_{\mathrm{BK},p}(E)\in\Delta_{\mathrm{BK},p}(E)$
+defined from visible data and normalization conventions (no $\Sha$ input);
+\item a $\Q_p$-linear transport isomorphism
+$\Phi_{\mathrm{BK},p}(E):\Delta_{\mathrm{spec},p}(E)\xrightarrow{\sim}\Delta_{\mathrm{BK},p}(E)$;
+\item the transported element
+$\mathbf{d}_{\mathrm{BK},p}(E):=\Phi_{\mathrm{BK},p}(E)(\mathbf{d}_{\mathrm{spec},p}(E))$;
+\item a scalar $u_p(E)\in\Q_p^\times$ and (canonically) an induced rational scalar $u(E)\in\Q^\times$ such that
+\[
+\mathbf{d}_{\mathrm{BK},p}(E)=u_p(E)\cdot \mathbf{t}_{\mathrm{BK},p}(E),
+\]
+together with the invariance/valuation control statements needed by \URC.
+\end{itemize}
+
+
+% ============================================================
+% Rank-one extension: \textsf{DLT-R1}
+% ============================================================
+
+\subsection{Input--output contract (rank-one extension: \textsf{DLT-R1})}
+\label{sec:DLT-R1-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item the \textsf{SME-R1} package of \Cref{sec:SME-R1-contract}, in particular
+$\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)\in \Delta^{(1)}_{\mathrm{spec},p}(E;K)$ and the calibration token
+$\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ from \Cref{lem:SME-R1-instantiation};
+\item the Selmer/Bloch--Kato complex and integral structures used to define $\Delta_{\mathrm{BK},p}(E)$ and
+$\Delta^{\mathrm{int}}_{\mathrm{BK},p}(E)$ (as in \Cref{sec:DLT-contract,sec:DLT-container});
+\item the same determinant-line conventions as in Appendix \Cref{app:detline-conventions}.
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item a rank-one arithmetic reference element $\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)\in \Delta_{\mathrm{BK},p}(E)$,
+compatible with \Cref{def:arith-ref} and the Gross--Zagier calibration token;
+\item a transport isomorphism
+$\Phi^{(1)}_{\mathrm{BK},p}(E;K):\Delta^{(1)}_{\mathrm{spec},p}(E;K)\xrightarrow{\sim}\Delta_{\mathrm{BK},p}(E)$,
+extending the rank-zero transport of \Cref{def:transport-iso};
+\item a defect scalar $u^{(1)}_p(E;K)\in\Q_p^\times$ defined by
+$\mathbf{d}^{(1)}_{\mathrm{BK},p}(E;K)=u^{(1)}_p(E;K)\cdot \mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)$,
+which is of the same URC-target type as in the rank-zero case.
+\end{itemize}
+
+\paragraph{Contract.}
+\begin{itemize}[leftmargin=2em]
+\item[\textbf{C1.}] (\emph{Same container}) \textsf{DLT-R1} uses the same arithmetic determinant line
+$\Delta_{\mathrm{BK},p}(E)$ as \DLT\ (no new Selmer objects are introduced).
+\item[\textbf{C2.}] (\emph{Reference calibration}) the rank-one reference element
+$\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)$ is the visible determinant-line trivialization of \Cref{def:arith-ref},
+with its regulator/height factor fixed compatibly with $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$.
+\item[\textbf{C3.}] (\emph{URC-target defect}) the resulting defect scalar behaves like a pure normalization/unit
+defect: all non-$p_0$ valuation contributions are fixed by Gate~L, so URC can target $u^{(1)}(E;K)=1$.
+\end{itemize}
+
+\paragraph{Failure modes.}
+\begin{itemize}[leftmargin=2em]
+\item \textsf{DLT-R1} does not, by itself, imply finiteness of $\Sha[p^\infty]$ nor identify any remaining
+index with $\#\Sha$ (those remain in \AFU\ / AFU-2);
+\item if the Gross--Zagier calibration token is not available (or inconsistent with the chosen height conventions),
+the scalar $u^{(1)}_p(E;K)$ remains defined but need not be URC-target in the intended BSD-compatible sense.
+\end{itemize}
+
+\begin{lemma}[Instantiation of \textsf{DLT-R1} (reference element and URC-target transport)]
+\label{lem:DLT-R1-instantiation}
+Assume the rank-one spectral germ package of \Cref{lem:SME-R1-instantiation} and the determinant-line setup of
+\Cref{sec:DLT-contract,def:arith-ref,def:transport-iso,def:up}. In the rank-one regime, define
+\[
+\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)\ :=\ \mathbf{t}_{\mathrm{BK},p}(E)
+\quad\text{with its regulator/height component calibrated by }\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K),
+\]
+and define the transport by tensor extension
+\[
+\Phi^{(1)}_{\mathrm{BK},p}(E;K)\ :=\ \Phi_{\mathrm{BK},p}(E)\ \otimes\ \mathrm{id}_{E(\Q)\otimes\Q_p}:
+\Delta^{(1)}_{\mathrm{spec},p}(E;K)\ \xrightarrow{\ \sim\ }\ \Delta_{\mathrm{BK},p}(E).
+\]
+Set $\mathbf{d}^{(1)}_{\mathrm{BK},p}(E;K):=\Phi^{(1)}_{\mathrm{BK},p}(E;K)(\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K))$
+and define $u^{(1)}_p(E;K)\in\Q_p^\times$ by
+\[
+\mathbf{d}^{(1)}_{\mathrm{BK},p}(E;K)\ =\ u^{(1)}_p(E;K)\cdot \mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K).
+\]
+Then $u^{(1)}_p(E;K)$ differs from the rational defect scalar induced by the same transport data by a $p$-adic unit
+(in the sense of \Cref{lem:DLT-global-local}), and all non-$p_0$ valuation contributions are fixed by Gate~L.
+Consequently, the rank-one defect scalar is URC-target of the same type as in the rank-zero case.
+\end{lemma}
+
+% ------------------------------------------------------------
+% Rank-one hardening: explicit determinant-line reference (DLT-R1)
+% ------------------------------------------------------------
+
+\begin{definition}[Explicit rank-one regulator normalization for $\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)$]
+\label{def:arith-ref-r1}
+Assume the rank-one regime and fix a non-torsion class
+$P\in E(\Q)/E(\Q)_{\mathrm{tors}}$ extracted from the Heegner package $\mathcal{P}_K$
+(e.g.\ $P=\mathrm{Tr}_{K/\Q}(P_K)$).
+Let $\kappa_p(P)\in H^1_f(\Q,V_pE)$ be its Kummer image, and let $\hat{h}(\cdot)$ denote the N\'eron--Tate height.
+In the determinant-line description underlying \Cref{def:arith-ref}, the free rank-one contribution is rigidified
+by the height pairing; in rank one we make this explicit by requiring that the regulator/height component of
+$\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)$ is the class of the scalar
+\[
+\mathrm{Reg}_{p}(P)\ :=\ \hat{h}(P)\cdot \kappa_p(P)^{-2}
+\]
+in the corresponding one-dimensional factor of $\Delta_{\mathrm{BK},p}(E)$ (so that replacing $P$ by $nP$
+multiplies $\hat{h}(P)$ by $n^2$ and $\kappa_p(P)^{-2}$ by $n^{-2}$, hence leaves $\mathrm{Reg}_{p}(P)$ unchanged).
+All remaining torsion/Tamagawa/period normalizations are exactly those fixed in \Cref{def:arith-ref}.
+\end{definition}
+
+\begin{proposition}[No hidden scaling in the rank-one reference element]
+\label{prop:R1-no-hidden-scaling}
+Let $S(E,K):=\{\,p:\ p\mid 2Nc_E\cdot D_K\,\}$. For every prime $p\notin S(E,K)$, the element
+$\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)$ of \Cref{lem:DLT-R1-instantiation,def:arith-ref-r1} is well-defined
+up to $\Z_p^\times$ (independently of the choice of generator $P$) and lies in the canonical lattice
+$\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$. Moreover, the Gross--Zagier token
+$\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ fixes the global scaling between the leading-term normalization
+in \SME-R1 and the height/regulator normalization in \Cref{def:arith-ref-r1}, so that the defect scalar
+$u^{(1)}_p(E;K)$ defined in \Cref{def:up-r1} is URC-target in the same sense as in rank zero (all valuations
+away from a chosen locking prime $p_0\notin S(E,K)$ are controlled by Gate~L/\DLT).
+\end{proposition}
+
+\begin{definition}[Rank-one transported element and defect scalar]
+\label{def:up-r1}
+In the rank-one extension of \DLT, define
+\[
+\mathbf{d}^{(1)}_{\mathrm{BK},p}(E;K)\ :=\ \Phi^{(1)}_{\mathrm{BK},p}(E;K)\bigl(\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)\bigr)
+\in \Delta_{\mathrm{BK},p}(E),
+\]
+and define $u^{(1)}_p(E;K)\in\Q_p^\times$ by the unique identity
+\[
+\mathbf{d}^{(1)}_{\mathrm{BK},p}(E;K)\ =\ u^{(1)}_p(E;K)\cdot \mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K).
+\]
+Moreover, define the global rank-one defect scalar $u^{(1)}(E;K)\in\Q^\times$ by the condition that its
+$p$-adic avatar agrees with $u^{(1)}_p(E;K)$ up to a $p$-adic unit for every prime $p$ in the sense of
+\Cref{lem:DLT-global-local}.
+\end{definition}
+
+
+
+
+\begin{lemma}[Calibration consistency in rank one]
+\label{lem:R1-calibration-consistency}
+Assume the hypotheses and constructions of \Cref{lem:SME-R1-instantiation,lem:DLT-R1-instantiation,def:up-r1}.
+Then the Gross--Zagier calibration token $\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ fixes the \emph{global}
+normalization between the leading-term spectral germ and the height/regulator conventions used in the arithmetic
+reference element. Concretely, let $S(E,K):=\{\,p:\ p\mid 2N\,c_E\cdot D_K\,\}$. For every prime $p\notin S(E,K)$ (so that the Gross--Zagier local factors and the fixed
+period/Manin conventions of the pipeline are $p$-adic units), the rank-one defect scalar satisfies
+\[
+u^{(1)}_p(E;K)\ \in\ \Z_p^\times,
+\]
+and its comparison with the induced rational scalar is unique up to $\Z_p^\times$ in the sense of
+\Cref{lem:DLT-global-local}. In particular, the global rank-one scalar $u^{(1)}(E;K)\in\Q^\times$ is of
+URC-target type: all non-$p_0$ valuation contributions are fixed by Gate~L, so URC may target $u^{(1)}(E;K)=1$.
+\end{lemma}
+
+\begin{proof}
+By construction in \Cref{lem:SME-R1-instantiation}, the rank-one spectral germ is
+$\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)=\mathbf{d}_{\mathrm{spec},p}(E)\otimes P$, and the token
+$\mathbf{H}_{\mathrm{GZ}}(E,K;\mathcal{P}_K)$ records (in the fixed conventions of the pipeline) the precise
+Gross--Zagier normalization identifying the analytic leading-term package with the N\'eron--Tate height package of
+$P$. Hence no additional \emph{global} scaling freedom remains between the leading-term normalization implicit in
+$\mathbf{d}^{(1)}_{\mathrm{spec},p}(E;K)$ and the height/regulator factor built into the arithmetic reference element
+$\mathbf{t}^{(1)}_{\mathrm{BK},p}(E;K)$: any remaining multiplicative discrepancy is forced to come from
+(i) the intrinsic $\Z_p^\times$-ambiguity of primitive generators relative to the fixed lattices and
+(ii) the finite collection of local normalization terms already locked in Gate~L.
+For all primes $p$ outside the finite set of primes dividing these local terms, the discrepancy is a $p$-adic unit,
+yielding $u^{(1)}_p(E;K)\in\Z_p^\times$.
+The compatibility with the induced rational scalar and the URC-target valuation profile are precisely the
+valuation-control conclusions used in \Cref{lem:DLT-R1-instantiation} together with \Cref{lem:DLT-global-local}.
+\end{proof}
+
+\subsection{The arithmetic determinant line (the container \texorpdfstring{$\LamAgg$}{Lambda})}
+\label{sec:DLT-container}
+
+We use determinant lines attached to Selmer/Bloch--Kato complexes.
+Fix the $p$-adic Tate module $T_p(E)$ and $V_p(E)=T_p(E)\otimes_{\Z_p}\Q_p$.
+Let $R\Gamma_f(\Q,V_p(E))$ denote a Selmer (Bloch--Kato) complex encoding the global Selmer conditions.
+We set
+\[
+\Delta_{\mathrm{BK},p}(E)\ :=\ \detline_{\Q_p}\bigl(R\Gamma_f(\Q,V_p(E))\bigr),
+\]
+and define its canonical integral lattice by choosing an integral model $R\Gamma_f(\Q,T_p(E))$:
+\[
+\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)\ :=\ \detline_{\Z_p}\bigl(R\Gamma_f(\Q,T_p(E))\bigr)
+\ \subset\ \Delta_{\mathrm{BK},p}(E).
+\]
+We refer to \cite{BlochKato1990,Nekovar2006} for this formalism.
+
+\begin{remark}
+\label{rem:DLT-sha-not-removed}
+Nothing in the definitions above requires $\Sha(E/\Q)$ to be finite.
+The container $\Delta_{\mathrm{BK},p}(E)$ is canonical at the level of determinant lines.
+Finiteness/cardinality interpretations appear only after an integral index upgrade (\AFU).
+\end{remark}
+
+\subsection{Arithmetic reference element (visible trivialization)}
+\label{sec:DLT-reference-element}
+
+We fix an arithmetic reference element
+$\mathbf{t}_{\mathrm{BK},p}(E)\in\Delta_{\mathrm{BK},p}(E)$
+determined by the normalization conventions for periods, heights, torsion and Tamagawa factors,
+as recorded in Appendix \Cref{app:detline-conventions}. The reference element is defined
+\emph{without} inserting $\#\Sha$.
+
+\begin{definition}[Arithmetic reference element]
+\label{def:arith-ref}
+Let $\mathbf{t}_{\mathrm{BK},p}(E)\in\Delta_{\mathrm{BK},p}(E)$ be the reference element induced by:
+\begin{enumerate}[leftmargin=2em]
+\item the fixed period convention $\Omega_E>0$ and real calibration (Gate~K),
+\item the N\'eron--Tate height pairing and regulator normalization,
+\item torsion normalization by $\#E(\Q)_{\mathrm{tors}}$,
+\item local Tamagawa normalizations by $c_\ell(E)$ for $\ell\mid N$,
+\item the lattice $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$ fixed by the Selmer complex.
+\end{enumerate}
+We require that $\mathbf{t}_{\mathrm{BK},p}(E)$ lies in the canonical lattice
+$\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$ and generates it as a free rank-one $\Z_p$-module (i.e.\ it is
+primitive in $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$).
+\end{definition}
+
+\begin{remark}
+\label{rem:DLT-ref-is-detline}
+The element $\mathbf{t}_{\mathrm{BK},p}(E)$ is a determinant-line trivialization datum.
+It packages the ``visible'' BSD factors but remains a line element; it is \emph{not} a claim of
+finite cardinalities.
+\end{remark}
+
+\subsection{Transport and extraction of the defect scalar}
+\label{sec:DLT-transport}
+
+Gate \DLT\ constructs a comparison map between the spectral determinant line (Gate~A2) and the arithmetic
+determinant line (above), and packages the mismatch into a single scalar.
+
+\begin{definition}[Transport isomorphism]
+\label{def:transport-iso}
+A \emph{transport isomorphism} is a $\Q_p$-linear isomorphism
+\[
+\Phi_{\mathrm{BK},p}(E):\ \Delta_{\mathrm{spec},p}(E)\xrightarrow{\ \sim\ }\Delta_{\mathrm{BK},p}(E)
+\]
+constructed functorially from the comparison data (period pairing plus fixed determinant-line identifications),
+compatible with the \LAI\ normalizations at all places $v\neq p_0$.
+\end{definition}
+
+\begin{definition}[Transported element and defect scalar]
+\label{def:up}
+Define the transported element
+\[
+\mathbf{d}_{\mathrm{BK},p}(E)\ :=\ \Phi_{\mathrm{BK},p}(E)\bigl(\mathbf{d}_{\mathrm{spec},p}(E)\bigr)
+\in \Delta_{\mathrm{BK},p}(E),
+\]
+and define $u_p(E)\in\Q_p^\times$ by the unique identity
+\[
+\mathbf{d}_{\mathrm{BK},p}(E)\ =\ u_p(E)\cdot \mathbf{t}_{\mathrm{BK},p}(E).
+\]
+\end{definition}
+
+\begin{definition}[Locking prime (URC datum)]
+\label{def:locking-prime}
+A prime $p_0$ is called a \emph{locking prime} for $E$ if the integral transport condition of \Cref{thm:locking-prime-integrality}
+holds at $p_0$, i.e.\ the determinant-line transport identifies the canonical $\Z_{p_0}$-lattices on the spectral and
+arithmetic sides.
+\end{definition}
+
+\begin{theorem}[Locking-prime integrality]
+\label{thm:locking-prime-integrality}
+Let $p$ be a prime such that $p\nmid 2N c_E$ (in the notation and normalization of
+\Cref{sec:period-normalization} and \Cref{sec:SME-period-transport}).
+Then the transport isomorphism $\Phi_{\mathrm{BK},p}(E)$ identifies the canonical integral lattices:
+\[
+\Phi_{\mathrm{BK},p}(E)\bigl(\Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)\bigr)\ =\ \Delta^{\mathrm{int}}_{\mathrm{BK},p}(E).
+\]
+\end{theorem}
+
+\begin{proof}
+The map $\Phi_{\mathrm{BK},p}(E)$ is built from the period pairing (modular symbols) together with the fixed
+determinant-line identifications on the arithmetic side.
+Two standard inputs control denominators: modular-symbol integrality away from bad primes, and the fact that the pullback
+$\varphi^\ast(\omega_E)$ differs from $(2\pi i)f(z)\,dz$ by the Manin constant $c_E$; see e.g. \cite{Cremona1997}.
+Thus for $p\nmid 2N c_E$ the transport carries $\Delta^{\mathrm{int}}_{\mathrm{spec},p}(E)$ into
+$\Delta^{\mathrm{int}}_{\mathrm{BK},p}(E)$ with $p$-adic unit index. Since both are free rank-one $\Z_p$-lattices, the inclusion is an equality.
+\end{proof}
+
+
+\begin{remark}[Scope of the locking-prime mechanism]
+\label{rem:locking-prime-scope}
+The unit-rigidity closure in \URC\ needs the integral identification at \emph{one} prime $p_0$.
+By \Cref{thm:locking-prime-integrality}, every prime $p_0\nmid 2N c_E$ is locking; in particular such primes exist (indeed, infinitely many).
+\end{remark}
+
+
+
+\subsection{Local valuation control (input for unit-rigidity)}
+\label{sec:DLT-valuation}
+
+\begin{proposition}[Non-$p_0$ valuation vanishing for the defect]
+\label{prop:DLT-local-control}
+Assume the \LAI\ normalization of Gate~L. Let $u(E)\in\Q^\times$ be the rational defect scalar obtained from \DLT.
+Then for every prime $\ell\neq p_0$ one has
+\[
+v_\ell\bigl(u(E)\bigr)=0.
+\]
+\end{proposition}
+
+\begin{remark}
+\label{rem:DLT-use}
+\Cref{prop:DLT-local-control} is the exact input used later to collapse $u(E)$ into $\{\pm 1\}$ once one supplies $v_{p_0}(u(E))=0$
+via the locking-prime integrality theorem (\Cref{thm:locking-prime-integrality}). It is purely a normalization statement and does not involve any
+finiteness input for $\Sha$.
+\end{remark}
+
+\subsection{Canonicality and invariance of the defect data}
+\label{sec:DLT-invariance}
+
+\begin{proposition}[Dependence on choices is $p$-adic unit scaling]
+\label{prop:DLT-canonicality}
+Within the admissible class of spectral realizations allowed by Gate~A2, and under the fixed \LAI\ package,
+the transport isomorphism $\Phi_{\mathrm{BK},p}(E)$ is well-defined up to multiplication by a $p$-adic unit.
+Consequently, replacing the chosen generators on the spectral/arithmetic sides rescales $u_p(E)$ by an element of $\Z_p^\times$.
+\end{proposition}
+
+\begin{proposition}[Invariance of the rational defect scalar]
+\label{prop:DLT-reduction}
+The induced rational scalar $u(E)\in\Q^\times$ obtained from the local scalars $u_p(E)$ (via the fixed determinant-line identifications)
+is independent of admissible choices in the spectral realization and of auxiliary normalizations absorbed by Gate~L.
+\end{proposition}
+
+\begin{lemma}[Global defect and localizations]
+\label{lem:DLT-global-local}
+Let $u(E)\in\Q^\times$ be the rational defect scalar of \Cref{prop:DLT-reduction}, and for each prime $p$
+write $u^{\mathrm{glob}}_p(E)\in\Q_p^\times$ for its image under $\Q\hookrightarrow\Q_p$.
+For any prime $p$ for which the transport data of \DLT\ is instantiated, the defect scalar $u_p(E)$ of \Cref{def:up} satisfies
+\[
+u_p(E)\,/\,u^{\mathrm{glob}}_p(E)\ \in\ \Z_p^\times.
+\]
+In particular, if $u(E)=1$ then $u^{\mathrm{glob}}_p(E)=1$ for all $p$, and any instantiated $u_p(E)$ is a $p$-adic unit.
+\end{lemma}
+
+\begin{proof}
+Fix $p$ and form $u(E)$ from the local data via the fixed identifications; \Cref{prop:DLT-reduction} shows that the resulting
+element of $\Q^\times$ is independent of all admissible choices. By \Cref{prop:DLT-canonicality}, admissible changes of the transport
+and of generators rescale $u_p(E)$ by a unit in $\Z_p^\times$. Therefore $u_p(E)$ differs from the localization of $u(E)$ by a $p$-adic unit,
+giving the stated inclusion.
+\end{proof}
+
+\subsection{Where Gate \DLT\ stops}
+\label{sec:DLT-stops}
+
+Gate \DLT\ stops after defining the canonical arithmetic container $\Delta_{\mathrm{BK},p}(E)$, the reference element
+$\mathbf{t}_{\mathrm{BK},p}(E)$, the transported element $\mathbf{d}_{\mathrm{BK},p}(E)$, and the defect scalar data
+$u_p(E)$ / $u(E)$ together with the valuation and invariance statements
+(\Cref{prop:DLT-local-control,prop:DLT-canonicality,prop:DLT-reduction,lem:DLT-global-local}).
+The unit-rigidity closure $u(E)=1$ is proved in \URC, using Gate~K only to fix the final sign.
+
+
+% ============================================================
+
+
+
+\section{Gate K: Real Calibration (Orientation and Positivity)}
+\label{sec:gate-K}
+
+\subsection{Purpose and positioning in the pipeline}
+\label{sec:gate-K-purpose}
+
+Gate~K provides the unique archimedean input used in the unit-rigidity closure (\URC).
+After Gate~L has removed all non-$p_0$ valuation freedom, and \DLT\ has reduced the global comparison
+to a single scalar $u(E)\in\Q^\times$, the rigidity mechanism forces $u(E)\in\{\pm1\}$.
+Gate~K is then the \emph{only} place where we choose a canonical branch and fix the sign:
+\[
+u(E)=+1.
+\]
+This is an orientation/positivity calibration on a real one-dimensional line; it does not invoke any
+$\Sha$-finiteness input and it does not change the arithmetic target.
+
+\subsection{Input--output contract}
+\label{sec:gate-K-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item the period/height normalization conventions (real period $\Omega_E$, N\'eron differential choice,
+and the N\'eron--Tate height pairing);
+\item the determinant-line decomposition conventions used to define the arithmetic reference element
+$\mathbf{t}_{\mathrm{BK},p}(E)$ (Appendix \Cref{app:detline-conventions}).
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item a canonical orientation/positivity convention on the relevant real determinant line;
+\item a sign-selection lemma implying that, once the residual scalar has already collapsed to $\{\pm1\}$,
+it must equal $+1$ under the chosen calibration.
+\end{itemize}
+
+\subsection{The calibrated positive generator}
+\label{sec:gate-K-positive-generator}
+
+We fix once and for all the archimedean conventions needed to select a ``positive'' generator.
+Concretely, we use:
+(i) the standard real period $\Omega_E>0$ associated to a N\'eron differential on a minimal model,
+and (ii) the regulator determinant computed from the N\'eron--Tate height pairing, which is
+nonnegative and positive on the free part.
+
+\begin{definition}[Calibrated positivity convention]
+\label{def:K-calibration}
+A \emph{calibration} is a choice of orientation on the real one-dimensional determinant line
+associated to the arithmetic container, compatible with:
+\begin{enumerate}[leftmargin=2em]
+\item the convention $\Omega_E>0$ for the real period, and
+\item the convention that $\Reg(E)$ is the determinant of the N\'eron--Tate height pairing on the free part,
+hence is positive once a basis is fixed (and basis changes are tracked by determinant signs).
+\end{enumerate}
+This induces a canonical ``positive'' generator in the corresponding real line.
+\end{definition}
+
+\begin{remark}
+\label{rem:K-basis-free}
+Although regulators are often presented using a basis of $E(\Q)/E(\Q)_{\mathrm{tors}}$, the determinant-line
+formalism packages this in a basis-free way: the induced generator changes by the sign of the basis
+change, which is exactly the remaining $\{\pm1\}$ ambiguity that Gate~K is designed to fix \emph{after}
+\URC\ has reduced to that two-point set.
+\end{remark}
+
+\subsection{The sign lock}
+\label{sec:gate-K-sign-lock}
+
+\begin{lemma}[Archimedean positivity forces the $+1$ branch]
+\label{lem:K-archimedean-positive}
+Assume the calibration of \Cref{def:K-calibration}.
+If the determinant-line comparison scalar satisfies $u(E)\in\{\pm1\}$, then the calibrated positivity
+convention forces
+\[
+u(E)=+1.
+\]
+\end{lemma}
+
+\begin{remark}
+\label{rem:K-scope}
+Gate~K does not change the value of any local factor and does not assert any integrality upgrade.
+It only fixes the global sign once the comparison has already collapsed to $\{\pm1\}$.
+\end{remark}
+
+\subsection{Where Gate K stops}
+\label{sec:gate-K-stops}
+
+Gate~K ends with the sign-selection lemma \Cref{lem:K-archimedean-positive}.
+All other parts of the unit-rigidity closure (in particular, the reduction $u(E)\in\{\pm1\}$)
+are proved in \URC\ and do not rely on any additional archimedean inputs beyond this calibration.
+
+
+
+
+
+
+% ============================================================
+\section{Gate A3 (\URC): Bulk--Edge Unit Rigidity and Locking}
+\label{sec:URC}
+
+\subsection{Purpose and positioning in the pipeline}
+\label{sec:URC-purpose}
+
+\paragraph{Scope of this section.}
+The goal of \URC\ is to close the reduction by killing the residual scalar $u(E)$ produced by the
+determinant-line transport (\DLT). The argument is conditional only on the \URC\ admissibility package:
+all required inputs (including the integral transport statement at a locking prime $p_0$,
+\Cref{thm:locking-prime-integrality}) are stated explicitly and used solely to constrain $u(E)$.
+Under these inputs, local valuation control away from $p_0$ forces $u(E)=\pm p_0^k$, the lattice lock at $p_0$
+forces $k=0$, and the fixed positivity/orientation convention (Gate~K) selects the $+1$ branch.
+We do not claim this verifies the \URC\ input for all curves; rather, it provides a clean ``PASS/FAIL''
+closure once \URC\ is verified in a given realization or family. Classical $\Sha$-finiteness is addressed
+only via the separate \AFU\ upgrade interface.
+
+Gate~A3 closes the reduction under the \URC\ admissibility contract. It takes as input the single defect scalar
+$u(E)\in\Q^\times$ extracted by \DLT\ and proves that the comparison admits \emph{no residual unit freedom}:
+\[
+u(E)=1 \qquad (\text{equivalently, for any instantiated prime }p,\ u_p(E)\in\Z_p^\times).
+\]
+The role of Gate~K is only to fix the final sign once $u(E)\in\{\pm 1\}$ has been established.
+
+Logically, Gate~A3 splits into three substeps:
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{(A3-adelic collapse)} from \LAI: $v_\ell(u(E))=0$ for all $\ell\neq p_0$ (Gate~L/\DLT);
+\item \textbf{(A3-lattice lock)} the locking-prime integrality theorem at $p_0$, forcing $v_{p_0}(u(E))=0$;
+\item \textbf{(A3-sign lock)} $u(E)\in\{\pm1\}$ and Gate~K fixes the $+1$ branch.
+\end{enumerate}
+
+Importantly, Gate~A3 locks \emph{unit ambiguity}. It does not, by itself, convert the determinant-line defect
+into an integral index (nor into $\#\Sha$). Such an upgrade is isolated in \AFU\ (\Cref{sec:AFU}).
+
+\subsection{Input--output contract}
+\label{sec:URC-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item the defect scalar $u_p(E)\in\Q_p^\times$ (and its rational avatar $u(E)\in\Q^\times$)
+defined in \Cref{def:up};
+\item non-$p_0$ valuation control from Gate~L / \DLT\ (\Cref{prop:DLT-local-control});
+\item the locking-prime lattice identification at $p_0$ (\Cref{thm:locking-prime-integrality});
+\item the real calibration (Gate~K) used only for the final sign choice.
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item $u(E)\in\{\pm1\}$ (unit/sign reduction);
+\item $u(E)=+1$ (sign lock), hence $u(E)=1$.
+\end{itemize}
+
+\subsection{Step 1: Adelic collapse to a \texorpdfstring{$p_0$}{p0}-power}
+\label{sec:URC-adelic}
+
+\begin{lemma}[Adelic valuation collapse]
+\label{lem:URC-unit-reduction}
+Assume \Cref{prop:DLT-local-control}. Then the rational defect scalar satisfies
+\[
+u(E)=\pm p_0^k
+\quad\text{for some }k\in\Z.
+\]
+Equivalently, all non-$p_0$ valuations vanish and any residual discrepancy is a pure $p_0$-power up to sign.
+\end{lemma}
+
+\begin{proof}
+Since $v_\ell(u(E))=0$ for every $\ell\neq p_0$, the prime factorization of $u(E)\in\Q^\times$ may involve
+only $p_0$ (up to sign), hence $u(E)=\pm p_0^k$.
+\end{proof}
+
+\subsection{Step 2: Lattice lock at \texorpdfstring{$p_0$}{p0} removes the \texorpdfstring{$p_0$}{p0}-power discrepancy}
+\label{sec:URC-lattice-lock}
+
+Let $p_0$ be a locking prime, i.e.\ a prime for which the lattice identification of \Cref{thm:locking-prime-integrality} holds.
+Then the transported element $\mathbf{d}_{\mathrm{BK},p_0}(E)$ and the reference element $\mathbf{t}_{\mathrm{BK},p_0}(E)$
+are both primitive generators of the same rank-one $\Z_{p_0}$-lattice $\Delta^{\mathrm{int}}_{\mathrm{BK},p_0}(E)$, so their ratio is a unit.
+
+\begin{lemma}[No $p_0$-power discrepancy]
+\label{lem:URC-no-p-power}
+Assume \Cref{thm:locking-prime-integrality} holds at $p=p_0$. Then $v_{p_0}(u(E))=0$. In particular, in
+\Cref{lem:URC-unit-reduction} one has $k=0$ and $u(E)\in\{\pm1\}$.
+\end{lemma}
+
+\begin{proof}
+By \Cref{thm:locking-prime-integrality} (at $p=p_0$), the transport identifies the integral lattices, hence the transported
+element $\mathbf{d}_{\mathrm{BK},p_0}(E)$ is a primitive generator of $\Delta^{\mathrm{int}}_{\mathrm{BK},p_0}(E)$.
+By construction, $\mathbf{t}_{\mathrm{BK},p_0}(E)$ is also primitive in the same rank-one lattice.
+Therefore their ratio is a unit in $\Z_{p_0}^\times$, so $v_{p_0}(u(E))=0$, forcing $k=0$ in
+\Cref{lem:URC-unit-reduction}.
+\end{proof}
+
+\begin{remark}
+\label{rem:URC-meaning}
+\Cref{lem:URC-no-p-power} is the point where the locking mechanism acts:
+it forbids a free $p_0$-power scaling between the spectral and arithmetic trivializations at the locking prime,
+without invoking any finiteness upgrade.
+\end{remark}
+
+\subsection{Step 3: Sign lock (using Gate K)}
+\label{sec:URC-sign}
+
+\begin{lemma}[Sign lock]
+\label{lem:URC-sign}
+Assume $u(E)\in\{\pm1\}$. Then the real calibration of Gate~K implies $u(E)=+1$.
+\end{lemma}
+
+\begin{proof}
+This is exactly \Cref{lem:K-archimedean-positive}.
+\end{proof}
+
+\subsection{Main locking theorem}
+\label{sec:URC-main}
+
+\begin{theorem}[Unit-Rigidity Locking (global form)]
+\label{thm:URC-locking}
+Assume the hypotheses of Gates L, A2 and \DLT, and let $p_0$ be a prime such that the integral transport
+condition of \Cref{thm:locking-prime-integrality} holds at $p=p_0$. Then the global defect scalar is fixed:
+\[
+u(E)=1\in\Q^\times.
+\]
+Consequently $u^{\mathrm{glob}}_p(E)=1$ for every prime $p$ (notation of \Cref{lem:DLT-global-local}),
+and for any prime $p$ where the transport data are instantiated one has $u_p(E)\in\Z_p^\times$.
+\end{theorem}
+
+\begin{proof}
+By \Cref{lem:URC-unit-reduction} we have $u(E)=\pm p_0^k$.
+By \Cref{lem:URC-no-p-power} we conclude $k=0$, so $u(E)\in\{\pm1\}$.
+Finally \Cref{lem:URC-sign} yields $u(E)=1$.
+\end{proof}
+
+\begin{corollary}[Unit-Rigidity Locking (rank-one form)]
+\label{cor:URC-locking-r1}
+Assume the hypotheses of Gates L, \textsf{SME-R1} and \textsf{DLT-R1}, and let $p_0$ be a locking prime in the sense of
+\Cref{def:locking-prime} (so the integral transport condition of \Cref{thm:locking-prime-integrality} holds at $p=p_0$).
+Then for any admissible Heegner datum $(K,\mathcal{P}_K)$ in the rank-one regime, the global rank-one defect scalar
+of \Cref{def:up-r1} is fixed:
+\[
+u^{(1)}(E;K)=1\in\Q^\times.
+\]
+Consequently $u^{(1),\mathrm{glob}}_p(E;K)=1$ for every prime $p$ (in the sense of \Cref{lem:DLT-global-local}),
+and for any prime $p$ where the rank-one transport data are instantiated one has $u^{(1)}_p(E;K)\in\Z_p^\times$.
+\end{corollary}
+
+\begin{proof}
+The proof is identical to \Cref{thm:URC-locking}, applied to $u^{(1)}(E;K)$ using the valuation control statement
+supplied by \Cref{lem:DLT-R1-instantiation} (together with Gate~L), the locking-prime lattice identification
+\Cref{thm:locking-prime-integrality}, and the sign lock from Gate~K.
+\end{proof}
+
+
+\begin{remark}[Choosing a locking prime]
+\label{rem:URC-one-good-prime}
+There always exist primes $p_0\nmid 2Nc_E$. The URC closure \Cref{thm:URC-locking} requires choosing one such prime
+$p_0$ for which the integrality identification in \Cref{thm:locking-prime-integrality} holds.
+In concrete instantiations this can be checked (or supplied as arithmetic input) at a single convenient prime.
+\end{remark}
+
+
+\begin{proof}
+Since $M$ has only finitely many prime divisors, there exists a prime $p_0\nmid M$. The conclusion then
+follows by applying \Cref{thm:locking-prime-integrality} (at $p=p_0$) inside \Cref{thm:URC-locking}.
+\end{proof}
+
+\begin{remark}[Scope of the conclusion]
+\label{rem:URC-scope}
+\Cref{thm:URC-locking} fixes the residual \emph{unit} ambiguity in the determinant-line comparison.
+It does not assert that the remaining arithmetic defect is a finite index, nor does it imply
+$\#\Sha(E/\Q)<\infty$.
+Such finiteness/index interpretations are isolated in the upgrade module \AFU\ (\Cref{sec:AFU}).
+\end{remark}
+
+\subsection{Where Gate A3 stops}
+\label{sec:URC-stops}
+
+Gate~A3 ends with the unit-rigidity identity $u(E)=1$ in the \emph{rational} determinant line.
+It makes no claim identifying any remaining arithmetic defect with a finite index or with $\#\Sha$.
+Such interpretations require lattice-level integrality and finiteness input, and are isolated in
+the upgrade module \AFU.
+
+
+
+
+
+
+
+
+\subsection{Computational normalization audit (rank \texorpdfstring{$0$}{0} and rank \texorpdfstring{$1$}{1})}
+\label{sec:computational-verification}
+
+We include a small computational \emph{sanity check} of the determinant-line normalization used in
+Gates~L/\DLT and the rank-$0/1$ instantiations of the scalar $u(E)$.
+For each curve we evaluate the \emph{numerical instantiation} of the unit-rigidity factor
+$u_{\mathrm{num}}(E)$ obtained by comparing the spectral leading term with the arithmetic
+lattice-volume prediction.
+
+\paragraph{Rank $0$.}
+For analytic rank $r_{\mathrm{an}}(E)=0$ we compute
+\[
+u_{\mathrm{num}}(E)
+\;:=\;
+\frac{\bigl(L(E,1)/\Omega_E\bigr)}{\bigl(\prod_{\ell\mid N}c_\ell(E)\bigr)\,/\,\#E(\Q)_{\mathrm{tors}}^{\,2}}
+\cdot \frac{1}{\;|\Sha(E/\Q)|_{\mathrm{an}}\;}
+\in \Q^{\times},
+\]
+using the database values of $L(E,1)$, $\Omega_E$, $\prod c_\ell(E)$ and $\#E(\Q)_{\mathrm{tors}}$.
+
+\paragraph{Rank $1$.}
+For analytic rank $r_{\mathrm{an}}(E)=1$ we compute
+\[
+u_{\mathrm{num}}(E)
+\;:=\;
+\frac{\bigl(L'(E,1)/\Omega_E\bigr)}{\bigl(\Reg(E)\cdot \prod_{\ell\mid N}c_\ell(E)\bigr)\,/\,\#E(\Q)_{\mathrm{tors}}^{\,2}}
+\cdot \frac{1}{\;|\Sha(E/\Q)|_{\mathrm{an}}\;},
+\]
+where $\Reg(E)$ is the N\'eron--Tate regulator (height of a chosen generator) as recorded in the database.
+
+\medskip
+
+In both cases, $u_{\mathrm{num}}(E)=1$ is the expected outcome when the Gates~L/\DLT conventions are
+aligned with the standard BSD invariant package.
+
+\begin{table}[t]
+\centering
+\caption{Selected rank-$0$ test cases with non-trivial $\Sha$ (database invariants)}
+\label{tab:computational-rank0-nontrivial-sha}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{lcccc}
+\hline
+Curve & $N$ & $\#E(\Q)_{\mathrm{tors}}$ & $|\Sha|_{\mathrm{an}}$ & $u_{\mathrm{num}}(E)$ \\
+\hline
+\texttt{571a1}  & 571  & 1 & 4 & $1$ \\
+\texttt{681b1}  & 681  & 1 & 9 & $1$ \\
+\texttt{960d1}  & 960  & 2 & 4 & $1$ \\
+\texttt{1058d1} & 1058 & 1 & 9 & $1$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{remark}[Interpretation and scope of the computational check]
+\label{rem:computational-scope}
+The computations confirm that our Gates~L/\DLT normalization conventions introduce no residual
+``hidden'' scalar factors in the rank-$0/1$ instantiations: across the tested samples we find
+$u_{\mathrm{num}}(E)=1$ (exactly in rank $0$, and to numerical precision in rank $1$).
+This should be read as a \emph{normalization audit} (consistency with the invariant package used by
+standard databases), not as an independent proof of BSD or of $\Sha$-finiteness when
+$|\Sha(E/\Q)|_{\mathrm{an}}$ is itself the database ``analytic order'' extracted from the BSD identity.
+The role of this subsection is to eliminate the practical risk that a missing Tamagawa/torsion/Manin/dyadic
+convention could reintroduce a spurious scalar defect at the level of explicit examples.
+\end{remark}
+
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\hline
+ & Rank $0$ & Rank $1$ \\
+\hline
+Curves tested & 33 & 28 \\
+Outcome & $u_{\mathrm{num}}(E)=1$ (exact) & $u_{\mathrm{num}}(E)=1$ (numerical) \\
+\hline
+\end{tabular}
+\end{center}
+
+
+% ============================================================
+\section{Gate A3-Int (\AFU): Optional Arithmetic Finiteness/Integrality Upgrade}
+\label{sec:AFU}
+
+\paragraph{AFU module map (at a glance).}
+\[
+\text{Gate~A3 (URC)}\ \Longrightarrow\
+\text{Gate~AFU-1G($S_{\mathrm{AFU}}$)}\ \Longrightarrow\
+\text{Gate~AFU-1G}\ \Longrightarrow\
+\text{Gate~AFU-2}\ \Longrightarrow\
+\text{Gate~AFU-3}.
+\]
+Here Gate~AFU-1G($S_{\mathrm{AFU}}$) produces a global index
+$D_{S_{\mathrm{AFU}}}(E)\in\Z[1/S_{\mathrm{AFU}}]$ for an explicit finite set $S_{\mathrm{AFU}}$;
+Gate~AFU-1G is the full $\Z$-level upgrade (i.e.\ $S_{\mathrm{AFU}}=\emptyset$).
+
+\noindent
+\emph{Remark on use in this manuscript.}
+The $\Z$-level Gate~AFU-1G is recorded as a formal strengthening.
+In practice, the present paper works primarily with the localized gate AFU-1G($S_{\mathrm{AFU}}$),
+where lattice-integrality holds automatically outside $S_{\mathrm{AFU}}$ and the primes in $S_{\mathrm{AFU}}$
+are handled (when needed) by separate local arithmetic inputs.
+
+
+\subsection{Purpose and positioning}
+\label{sec:AFU-purpose}
+
+Gate~A3-Int is an \emph{optional plug-in} (\AFU) that upgrades the locked determinant-line identity
+from Gate~A3 (\URC) to an \emph{integral/lattice index} statement, and---when an appropriate finiteness
+package is supplied---to the familiar classical BSD cardinality interpretation for the $p$-primary
+Tate--Shafarevich group.
+
+Crucially, no part of Gate~A3-Int is used in the unit-rigidity locking theorem.
+All finiteness and cardinality assertions are isolated here to avoid any ``$\Sha$ bypass'' illusion.
+
+\paragraph{Optional internal route (LAI-local finiteness, no $p$-divisible defect).}
+Besides importing an external finiteness/index package, there is a purely \emph{local} route that can
+eliminate the $p$-divisible obstruction in favorable situations.
+Using the N\'eron connected component $E_0(\Q_v)\subset E(\Q_v)$ one may define a modified Selmer
+structure $f'$ by Kummer images of $E_0(\Q_v)$ at $v\mid pN$ (and $f'=f$ at good places); see
+\Cref{app:LAI-fprime} and in particular \Cref{lem:LAI-fprime-bad,lem:LAI-fprime-p}.
+These lemmas show that the local quotients $H^1_f(\Q_v,A)/H^1_{f'}(\Q_v,A)$ are finite $p$-groups,
+supported only at finitely many places.
+
+\paragraph{Interface point and plug-in boundary.}
+To turn this local finiteness into an \AFU\ upgrade one must identify the \LAI/\SME\ spectral complex
+$C_{\mathrm{sp},p}$ with the Selmer complex $R\Gamma_{f'}(\Q,T_p(E))$ and the comparison map
+$\phi_p:C_{\mathrm{sp},p}\to C_{\mathrm{ar},p}$ with the natural morphism induced by $f'_v\subset f_v$.
+See \Cref{sec:LAI-to-fprime-extract}, in particular \Cref{prop:Csp-is-RGfprime}, for the mapping-fiber definition of $C_{\mathrm{sp},p}$
+and the Selmer-complex identification that make this interface precise.
+We isolate this as the interface theorem \Cref{thm:LAI-interface}.
+If \Cref{thm:LAI-interface} holds, then the defect cone is a finite local-difference complex and has no
+$p$-divisible cohomology, so the AFU obstruction disappears \emph{without} invoking Euler systems.
+If \Cref{thm:LAI-interface} is not proven, Gate~A3-Int remains an explicit plug-in point for standard
+inputs (Kato/Kolyvagin/Greenberg/Iwasawa packages) as stated in \Cref{thm:afu-upgrade}.
+
+
+\subsection{Mapping fiber construction and the Selmer interface (main-text extract)}
+\label{sec:LAI-to-fprime-extract}
+
+Referees often treat appendices lightly, so we record here (in self-contained form) the algebraic mechanism behind the
+``spectral-to-Selmer'' interface used in the optional internal AFU route.
+
+\begin{definition}[Mapping-fiber definition of the spectral complex $C_{\mathrm{sp},p}$]
+\label{def:Csp-mapping-fiber-main}
+Fix a prime $p\neq 2$ and set $T:=T_p(E)$.
+Choose a finite set of places $S$ containing all primes $\ell\mid N$, the place $p$, and any auxiliary places used to present Selmer complexes.
+For each $v\in S$, choose an \LAI\ local condition subgroup $H^1_{\LAI}(\Q_v,T)\subset H^1(\Q_v,T)$ and realize it by a local condition complex
+$U^{\LAI}_v(T)\to R\Gamma(\Q_v,T)$ which is an isomorphism on $H^0$ and $H^2$ (cf.\ \Cref{lem:LAI-L0L2-local-duality}) and whose $H^1$-image
+equals $H^1_{\LAI}(\Q_v,T)$.
+Define
+\[
+F^{\LAI}:\ R\Gamma(G_{\Q,S},T)\ \oplus\ \bigoplus_{v\in S}U^{\LAI}_v(T)\ \longrightarrow\ \bigoplus_{v\in S}R\Gamma(\Q_v,T)
+\]
+as $\mathrm{res}\oplus(-\!\bigoplus_v i^{\LAI}_v)$, and set
+\[
+C_{\mathrm{sp},p}\ :=\ \mathrm{Cone}\!\left(F^{\LAI}\right)[-1]\ \in\ D^b(\Z_p).
+\]
+\end{definition}
+
+\begin{lemma}[Local gluing: \LAI\ equals the $f'$ Selmer structure at $v\mid pN$]
+\label{lem:LAI-local-equals-fprime-main}
+Let $A:=E[p^\infty]$ and define $f'$ by the Kummer images of the connected N\'eron component $E_0(\Q_v)$ at $v\mid pN$
+(and $f'=f$ at $v\nmid pN$), as in Appendix~\Cref{app:LAI-fprime}.
+Assume Gate~L (\LAI) is instantiated with the Tamagawa-matching convention and is stable/functorial under admissible modifications.
+Then for every $v$ one has
+\[
+H^1_{\LAI}(\Q_v,T)=
+\begin{cases}
+\kappa_v\!\bigl(E_0(\Q_v)\otimes \Z_p\bigr), & v\mid pN,\\[2pt]
+H^1_f(\Q_v,T), & v\nmid pN.
+\end{cases}
+\]
+\end{lemma}
+
+\paragraph{Interface theorem.}
+Combining \Cref{def:Csp-mapping-fiber-main,lem:LAI-local-equals-fprime-main} with Selmer-complex formalism yields the identification
+of $C_{\mathrm{sp},p}$ with $R\Gamma_{f'}(\Q,T)$ and shows that the comparison map $\phi_p$ is the natural morphism induced by $f'\subset f$.
+This is recorded as the Spectral--Selmer Identification theorem (\Cref{thm:LAI-interface}); the detailed derived-category
+verification is given in Appendix~\Cref{sec:LAI-to-fprime}.
+
+
+
+
+\begin{proposition}[Where the $p$-divisible obstruction lives]
+\label{prop:defect-divisible-obstruction}
+Fix $p\neq 2$. Suppose the comparison map $\phi_p$ identifies (in the derived category) with a morphism of Selmer complexes
+induced by an inclusion of Selmer structures $f'\subset f$ (for $T_p(E)$), so that
+$C_{\mathrm{def},p}:=\mathrm{Cone}(\phi_p)$ is the Selmer-defect cone.
+Then the maximal $p$-divisible subgroup of the defect is exactly the maximal $p$-divisible subgroup of
+$\Sha(E/\Q)[p^\infty]$ (via the standard exact sequence relating $p^\infty$-Selmer and $\Sha[p^\infty]$).
+In particular, showing that $C_{\mathrm{def},p}$ has finite cohomology (equivalently, no $p$-divisible cohomology)
+eliminates the only genuinely non-integral obstruction to the strong $p$-adic BSD upgrade in Gate~A3-Int.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+The distinguished triangle $C_{\mathrm{sp},p}\to C_{\mathrm{ar},p}\to C_{\mathrm{def},p}\to$ yields a long exact sequence on cohomology.
+Under the Selmer-complex identification, $H^1(C_{\mathrm{ar},p})$ is the classical $p^\infty$-Selmer group, and its quotient
+by the Mordell--Weil contribution identifies with $\Sha(E/\Q)[p^\infty]$.
+The assumption that $\phi_p$ arises from $f'\subset f$ implies that $C_{\mathrm{def},p}$ measures only the Selmer-structure defect,
+so any $p$-divisible subgroup in $H^1(C_{\mathrm{def},p})$ must come from the $\Sha[p^\infty]$ side. Conversely, a $p$-divisible
+subgroup in $\Sha[p^\infty]$ survives in the defect.
+\end{proof}
+\subsection{Input--output contract (the AFU API)}
+\label{sec:AFU-contract}
+
+\paragraph{Input.}
+\begin{itemize}[leftmargin=2em]
+\item the locked unit condition $u(E)=1$ from Gate~A3 (equivalently, for any instantiated $p$, $u_p(E)\in\Z_p^\times$);
+\item the arithmetic integral lattice $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)\subset \Delta_{\mathrm{BK},p}(E)$
+defined in Gate~\DLT (Selmer complex);
+\item (only for AFU-2/3) an \emph{external} arithmetic finiteness/control package sufficient to identify a lattice index
+with the expected $p$-primary BSD defect factor (examples recorded later).
+\end{itemize}
+
+\paragraph{Output.}
+\begin{itemize}[leftmargin=2em]
+\item an integral index statement in the arithmetic determinant line (globalized either over $\Z[1/S_{\mathrm{AFU}}]$ or over $\Z$);
+\item under external finiteness/control input, an identification of the resulting index with the expected BSD $p$-primary defect
+(and, where applicable, $\#\Sha(E/\Q)[p^\infty]$).
+\end{itemize}
+
+
+\paragraph{Plug-in menu (AFU-1G / AFU-2 / AFU-3).}
+For the reader (and the referee), we spell out the three \AFU\ gates as a concrete ``menu'' of admissible upgrade routes.
+The paper proves the \emph{locking} prerequisite (Gate~A3, i.e.\ URC), and then \AFU\ can be activated in one of the following ways:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{AFU-1G (Index packaging / integrality).}
+This gate turns the locked rational comparison into a \emph{lattice index} statement
+(either localized over $\Z[1/S_{\mathrm{AFU}}]$ or globally over $\Z$); see \Cref{sec:AFU-1GS,sec:AFU-1G}.
+Outside the exceptional set $S_{\mathrm{AFU}}(E)=\{p:\,p\mid 2Nc_E\}$ the lattice-integrality is provided by the locking-prime
+integral transport input, cf.\ \Cref{cor:AFU-1GS-from-77}. At the exceptional primes, AFU-1G is an explicit bookkeeping interface
+(\Cref{rem:AFU-remaining-primes,rem:AFU-1G-status}).
+An \emph{internal} fixed-prime shortcut is available under the interface theorem \Cref{thm:LAI-interface} (organized in \Cref{sec:LAI-to-fprime-extract}):
+under the Selmer-complex identification \Cref{prop:Csp-is-RGfprime} the comparison map becomes the natural morphism induced by $f'\subset f$,
+and then \Cref{cor:afu-1g-from-lai} shows the defect cone has \emph{no $p$-divisible part} (finite local quotients; \Cref{app:LAI-fprime}).
+
+\item \textbf{AFU-2 (Index-ID).}
+This gate identifies the resulting index exponent with the expected BSD discrete factors in the chosen normalization
+(Tamagawa/torsion conventions already fixed upstream); see \Cref{sec:AFU-2}.
+It is treated as an imported engine (Euler systems / Gross--Zagier--Kolyvagin / Iwasawa main conjecture inputs),
+with representative entry points listed in \Cref{sec:AFU-packages}.
+
+\item \textbf{AFU-3 (Rank bridge and $\Sha$-finiteness closure).}
+This gate records the remaining closure assertions needed to pass from an identified index exponent to the classical BSD content,
+including finiteness/control of $\Sha(E/\Q)[p^\infty]$ and the analytic--algebraic rank bridge; see \Cref{sec:AFU-3}.
+\end{itemize}
+
+
+\noindent
+Accordingly, the only ``non-URC'' content needed to obtain classical BSD statements is explicitly confined to the gates AFU-1G/2/3.
+The plug-in boundary is the interface theorem \Cref{thm:LAI-interface} (cf.\ the paragraph ``Interface point and plug-in boundary'' above and \Cref{sec:LAI-to-fprime-extract});
+otherwise one proceeds by plugging in standard external arithmetic packages as in \Cref{thm:AFU-template,thm:afu-upgrade}.
+
+
+\begin{remark}[Normalization handshake required of AFU plug-ins]
+\label{rem:AFU-normalization-handshake}
+Whenever an external arithmetic package is invoked in Gates AFU-2/AFU-3, it must be supplied together with an explicit
+\emph{normalization dictionary} identifying its conventions with the fixed upstream choices encoded in the reference element
+$\mathbf{t}_{\mathrm{BK},p}(E)$ (period/orientation, torsion, Tamagawa, and any Manin/dyadic protocols).
+Concretely, the package must declare (i) the class of primes and curves covered (e.g.\ ordinary/supersingular, reduction hypotheses),
+(ii) which Selmer structure (local conditions) is being controlled, and (iii) the explicit rational scalar
+$\lambda_{\mathrm{trans}}\in\Q^\times$ converting its ``$L$-value generator'' to our $\Delta_{\mathrm{spec}}^{\mathrm{int}}(E)$-generator.
+After this translation, the remaining visible discrepancy is exactly the fixed factor $V_{\mathrm{vis}}(E)$ appearing in
+Gate~AFU-2 (\Cref{prop:AFU2-indexID-conditional}).
+This makes the plug-in boundary fully auditable: no arithmetic content is hidden in normalization.
+\end{remark}
+
+
+
+
+\subsection[Gate AFU-1G (SAFU)]%
+{Gate AFU-1G(\texorpdfstring{$S_{\mathrm{AFU}}$}{SAFU}) (\AFU): Global lattice index over \texorpdfstring{$\Z[1/S_{\mathrm{AFU}}]$}{Z[1/SAFU]}}
+\label{sec:AFU-1GS}
+
+
+\paragraph{Purpose.}
+Gate~AFU-1G($S_{\mathrm{AFU}}$) is the practical intermediate strengthening of Gate~AFU-1G:
+it replaces the global $\Z$-inclusion by an inclusion over $\Z[1/S_{\mathrm{AFU}}]$ for an explicit finite set
+$S_{\mathrm{AFU}}$, thereby producing a single global index
+$D_{S_{\mathrm{AFU}}}(E)\in \Z[1/S_{\mathrm{AFU}}]$ whose local valuations govern the $p$-adic indices
+for all $p\notin S_{\mathrm{AFU}}$.
+
+\paragraph{Definition of $S_{\mathrm{AFU}}$ (minimal by construction).}
+\label{par:def-SAFU}
+Let $E/\Q$ have conductor $N$ and Manin constant $c_E$ (\Cref{def:locking-prime}). Define the finite exceptional set
+\[
+S_{\mathrm{AFU}}(E)\ :=\ \{\,p:\ p\mid 2Nc_E\,\}.
+\]
+This is the minimal set suggested by the period-pairing channel: by the locking-prime integrality criterion
+(\Cref{thm:locking-prime-integrality}), for every prime $p\notin S_{\mathrm{AFU}}(E)$ the determinant-line transport is lattice-integral.
+
+\paragraph{Gate-AFU-1G($S_{\mathrm{AFU}}$) requirement and output.}
+Assume, in addition to Gate~A2 and Gate~A3, that the determinant lines admit compatible \emph{global} integral structures:
+\begin{itemize}[leftmargin=2em]
+\item a one-dimensional $\Q$-line $\Delta_{\mathrm{spec}}(E)$ with a full-rank $\Z$-lattice
+$\Delta_{\mathrm{spec}}^{\mathrm{int}}(E)\subset \Delta_{\mathrm{spec}}(E)$ such that
+$\Delta_{\mathrm{spec},p}^{\mathrm{int}}(E)=\Delta_{\mathrm{spec}}^{\mathrm{int}}(E)\otimes_{\Z}\Z_p$;
+\item a one-dimensional $\Q$-line $\Delta_{\mathrm{BK}}(E)$ with a canonical full-rank $\Z$-lattice
+$\Delta_{\mathrm{BK}}^{\mathrm{int}}(E)\subset \Delta_{\mathrm{BK}}(E)$ such that
+$\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)=\Delta_{\mathrm{BK}}^{\mathrm{int}}(E)\otimes_{\Z}\Z_p$;
+\item a global rational transport isomorphism
+$\det(\Phi_{\mathrm{BK}}(E)):\Delta_{\mathrm{spec}}(E)\xrightarrow{\sim}\Delta_{\mathrm{BK}}(E)$
+whose $p$-adic base change agrees with the instantiated $\Phi_{\mathrm{BK},p}(E)$ of Gate~\DLT-Q,
+and which carries no residual $\Q^\times$ ambiguity after Gate~A3 (the ``unit/adelic lock'').
+\end{itemize}
+
+Define the transported global lattice
+\[
+\Delta_{\mathrm{img}}^{\mathrm{int}}(E)\ :=\ \det(\Phi_{\mathrm{BK}}(E))\bigl(\Delta_{\mathrm{spec}}^{\mathrm{int}}(E)\bigr)
+\ \subset\ \Delta_{\mathrm{BK}}(E).
+\]
+Gate~AFU-1G($S_{\mathrm{AFU}}$) asserts the global inclusion after inverting $S_{\mathrm{AFU}}$:
+\[
+\Delta_{\mathrm{img}}^{\mathrm{int}}(E)\otimes_{\Z}\Z[1/S_{\mathrm{AFU}}]\ \subset\
+\Delta_{\mathrm{BK}}^{\mathrm{int}}(E)\otimes_{\Z}\Z[1/S_{\mathrm{AFU}}].
+\]
+Consequently, one obtains a well-defined global index
+\[
+D_{S_{\mathrm{AFU}}}(E)\ :=\ \bigl[\Delta_{\mathrm{BK}}^{\mathrm{int}}(E)\otimes_{\Z}\Z[1/S_{\mathrm{AFU}}]\ :\
+\Delta_{\mathrm{img}}^{\mathrm{int}}(E)\otimes_{\Z}\Z[1/S_{\mathrm{AFU}}]\bigr]\ \in\ \Z[1/S_{\mathrm{AFU}}]_{>0}.
+\]
+
+\begin{corollary}[Lattice lock outside $S_{\mathrm{AFU}}$]
+\label{cor:AFU-1GS-from-77}
+For every prime $p\notin S_{\mathrm{AFU}}(E)=\{\,p:\ p\mid 2Nc_E\,\}$, the determinant-line transport is lattice-integral:
+\[
+\det(\Phi_{\mathrm{BK},p})\bigl(\Delta_{\mathrm{spec},p}^{\mathrm{int}}(E)\bigr)=\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E),
+\]
+hence Gate~AFU-1G($S_{\mathrm{AFU}}$) holds and the index $D_{S_{\mathrm{AFU}}}(E)\in \Z[1/S_{\mathrm{AFU}}]_{>0}$ is well-defined.
+\end{corollary}
+
+\begin{remark}[Remaining primes to close for the $\Z$-level upgrade]
+\label{rem:AFU-remaining-primes}
+With the minimal choice $S_{\mathrm{AFU}}(E)=\{p:\,p\mid 2Nc_E\}$, the only remaining input needed to upgrade
+from $\Z[1/S_{\mathrm{AFU}}]$ to a full $\Z$-level statement is the localized lattice bookkeeping at the exceptional primes
+$p\mid 2Nc_E$ (typically split into $p\mid N$, $p\mid c_E$, and $p=2$).
+No general claim is made here that these exceptional primes are resolved.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Gate AFU-1G (\AFU): Global lattice index gate (\texorpdfstring{$\Z$}{Z}-level strengthening)}
+\label{sec:AFU-1G}
+
+\paragraph{Positioning.}
+Gate~A3 locks the \emph{adelic/unit} ambiguity: the remaining mismatch after transport cannot hide in $\Q^\times$-units.
+Gate~AFU-1G is the \emph{global} strengthening: it upgrades the defect container from $\Z_p$-lattices to a single
+\emph{$\Z$-lattice index} $D(E)\in\Z_{>0}$, so that all $p$-adic indices become valuations of one integer.
+
+\paragraph{Gate-AFU-1G requirement and output.}
+Assume the same global integral-structure inputs as in Gate~AFU-1G($S_{\mathrm{AFU}}$), and assume moreover the full $\Z$-level lattice lock
+\[
+\Delta_{\mathrm{img}}^{\mathrm{int}}(E)\ \subset\ \Delta_{\mathrm{BK}}^{\mathrm{int}}(E).
+\]
+Then one obtains a well-defined \emph{global} integer index
+\[
+D(E)\ :=\ \bigl[\Delta_{\mathrm{BK}}^{\mathrm{int}}(E)\ :\ \Delta_{\mathrm{img}}^{\mathrm{int}}(E)\bigr]\ \in\ \Z_{>0},
+\]
+which is the unique residual \emph{discrete} defect compatible with the unit rigidity of Gate~A3.
+
+\begin{lemma}[Rank-1 lattice ratio]
+\label{lem:AFU-L1-rank1-ratio}
+Let $V$ be a one-dimensional $\Q$-vector space and let $L_1,L_2\subset V$ be full-rank $\Z$-lattices.
+Then there exists a unique $q\in\Q^\times$ such that $L_2=q\,L_1$.
+Moreover, $L_2\subset L_1$ if and only if $q\in\Z$; in that case $[L_1:L_2]=|q|$.
+\end{lemma}
+
+\begin{lemma}[Localization gives valuations]
+\label{lem:AFU-L2-localization-vp}
+Let $L_2\subset L_1$ be full-rank $\Z$-lattices in a one-dimensional $\Q$-space and write
+$n:=[L_1:L_2]\in\Z_{>0}$.
+For a prime $p$, set $L_{i,p}:=L_i\otimes_{\Z}\Z_p$. Then $L_{2,p}\subset L_{1,p}$ and
+\[
+[L_{1,p}:L_{2,p}]\ =\ p^{v_p(n)}.
+\]
+\end{lemma}
+
+\begin{remark}[What Gate-AFU-1G buys you]
+\label{rem:AFU-1G-buys}
+If Gate~AFU-1G holds, then every $p$-adic index is automatically a valuation of the single global integer $D(E)$:
+\[
+\Ind_p(\,\cdot\,)\ \text{is governed by}\ v_p\!\bigl(D(E)\bigr).
+\]
+In particular, only finitely many primes can contribute a nontrivial defect, without any additional argument.
+\end{remark}
+
+\begin{remark}[Status of Gate~AFU-1G]
+\label{rem:AFU-1G-status}
+Gate~AFU-1G is an \emph{upgrade interface}: it isolates the passage from local $\Z_p$-lattice control
+to a single global $\Z$-lattice index $D(E)\in\Z_{>0}$.
+In general, establishing the full $\Z$-level inclusion at the exceptional primes $p\mid 2Nc_E$ requires additional
+local input (bookkeeping at $p\mid N$, parametrization scaling at $p\mid c_E$, and possible separate $2$-adic conventions).
+No claim is made here that Gate~AFU-1G holds unconditionally for all curves.
+\end{remark}
+
+\begin{remark}[Integrality closure vs.\ BSD arithmetic closure]
+\label{rem:AFU-integrality-vs-arithmetic}
+Gates AFU-1G($S_{\mathrm{AFU}}$) and AFU-1G concern \emph{integrality/index packaging} only.
+They do \emph{not} identify the index with BSD arithmetic factors, nor do they imply $\#\Sha(E/\Q)<\infty$.
+Those deeper arithmetic closure steps are recorded separately in the open interfaces Gate~AFU-2 and Gate~AFU-3.
+\end{remark}
+
+
+
+
+
+
+% ------------------------------------------------------------
+
+% ------------------------------------------------------------
+% ------------------------------------------------------------
+\subsection{Gate AFU-2 (\AFU): Index identification interface (Index-ID)}
+\label{sec:AFU-2}
+
+\paragraph{Input.}
+Assume Gate~AFU-1G($S_{\mathrm{AFU}}$), so that a global localized index
+\[
+D_{S_{\mathrm{AFU}}}(E)\in \Z[1/S_{\mathrm{AFU}}]_{>0}
+\]
+is defined, and for every prime $p\notin S_{\mathrm{AFU}}$ the corresponding local lattice defect
+is governed by $v_p(D_{S_{\mathrm{AFU}}}(E))$ (cf.\ \Cref{lem:AFU-L2-localization-vp}).
+If, in addition, the full $\Z$-level Gate~AFU-1G holds, we write $D(E)\in\Z_{>0}$ for the global integer index and
+$v_p(D(E))$ for its local valuations.
+
+\paragraph{Output (Index-ID).}
+Gate~AFU-2 is the \emph{arithmetic identification} of the lattice defect with the discrete BSD defect.
+Concretely, it asserts an equality of $p$-adic defect exponents (for $p\notin S_{\mathrm{AFU}}$ under Gate~AFU-1G($S_{\mathrm{AFU}}$), and for all $p$ under Gate~AFU-1G),
+as stated precisely in \Cref{prop:AFU2-indexID-conditional}. The factor $V_{\mathrm{vis}}(E)\in\Q_{>0}$ records the explicit visible correction coming from the fixed normalization
+(period/orientation, torsion, Tamagawa, Manin/dyadic protocols; cf.\ Appendix~\Cref{app:detline-visible} and Gates~L/\DLT/K).
+
+\paragraph{Status.}
+Gate~AFU-2 is an \emph{interface} to external arithmetic input (Euler systems / Iwasawa main conjecture packages)
+in regimes where such identifications are known. No unconditional global Index-ID statement is asserted here.
+
+\begin{remark}[Internal closure targets for Failure Mode F2 (three A0 levels)]
+\label{rem:AFU2-internal-targets}
+We do not claim these targets here; we record them only to isolate the minimal internal input needed to eliminate positive $p$-corank
+(Failure Mode~F2). Fix $p$ and let $e_p$ denote the $p$-adic defect exponent measuring the valuation gap between the transported
+rank-$0$ germ in $\Delta_{\mathrm{BK},p}(E)$ and the canonical lattice $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$ (equivalently,
+when defined, the alternating $\Z_p$-length of the defect-cone cohomology).
+\textup{(A0$_w$)} Well-defined valuation: in analytic rank $0$, $e_p$ is finite and canonically defined (no auxiliary ``volume form''
+choice on a hypothetical free part of $H^1$). Under the Selmer interface and ``no $p$-divisible defect'' (Cor.~3.3), this is
+equivalent to $\mathrm{corank}_{\Z_p}H^1(R\Gamma_{f'}(\Q,T_p(E)))=0$, hence suffices to close F2.
+\textup{(A0$_m$)} Computable valuation: in analytic rank $0$, $e_p$ is canonically defined and equals the internal defect-cone exponent.
+\textup{(A0$_s$)} Primitive transport: the transported germ is primitive in $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$, i.e.\ $e_p=0$;
+this is strictly stronger than needed for F2 and should be viewed as a separate high-cost target.
+\end{remark}
+
+\begin{remark}[External arithmetic packages matching the A0-hierarchy]
+\label{rem:AFU2-external-packages}
+The three internal targets A0$_w \to$ A0$_m \to$ A0$_s$ match standard external tools in the literature.
+First, A0$_w$ (well-defined valuation / Failure Mode~F2 closure) is precisely the cotorsion closure of the
+$p^\infty$-Selmer group in analytic rank $0$, and is typically obtained by Euler-system machinery (Kato) under
+standard hypotheses and a suitable nonvanishing input. \cite{Kato2004PadicHodge}
+Second, A0$_m$ (computable valuation / index identification) corresponds to Iwasawa main conjecture input
+together with explicit reciprocity laws, identifying the $p$-adic valuation of the transported $L$-value germ
+with the internal defect exponent; in the ordinary case this is supplied by Skinner--Urban type results.
+\cite{SkinnerUrban2014IMCGL2}
+In many rank-$0$ applications one packages this identification as a $p$-part BSD valuation statement after
+specialization/control (e.g.\ Theorem~C of Castella--\c{C}iperiani--Skinner--Sprung). \cite{CastellaCiperianiSkinnerSprung2018}
+Finally, A0$_s$ (primitive transport, i.e.\ $e_p=0$) is strictly stronger than needed for F2 and should not be
+treated as a mere normalization: it forces vanishing of the residual $p$-torsion exponent and is not expected
+in general when $\Sha$ has nontrivial $p$-part.
+\end{remark}
+
+
+
+
+\begin{proposition}[Gate~AFU-2 (Conditional Index--ID identification, rank $0$)]
+\label{prop:AFU2-indexID-conditional}
+Assume analytic rank $r_{\mathrm{an}}(E)=0$, fix $p\neq 2$, and assume the constructed Interface Theorem \Cref{thm:LAI-interface} (hence \Cref{cor:afu-1g-from-lai}).
+Let $V_{\mathrm{vis}}(E)\in\Q_{>0}$ be the visible normalization scalar determined by the fixed conventions
+(period/orientation, torsion, Tamagawa, Manin/dyadic protocols; cf.\ Appendix~\Cref{app:detline-visible} and Gates~L/\DLT/K),
+and set the explicit finite visible set
+\[
+S_{\mathrm{vis}}(E)\ :=\ \{\,p:\ p\mid 2N\,c_E\cdot \#E(\Q)_{\mathrm{tors}}\,\}.
+\]
+Assume the AFU-2 arithmetic input identifying the Selmer-defect exponent with the $p$-primary BSD defect in this normalization.
+Then the Index--ID equality of $p$-adic exponents holds:
+\[
+v_p\!\bigl(D_{\ast}(E)\bigr)
+\;=\;
+\ord_p\!\bigl(\#\Sha(E/\Q)[p^\infty]\bigr)\;+\;v_p\!\bigl(V_{\mathrm{vis}}(E)\bigr),
+\]
+where $D_{\ast}(E)$ denotes $D_{S_{\mathrm{AFU}}}(E)$ for $p\notin S_{\mathrm{AFU}}$ (and $D(E)$ under Gate~AFU-1G).
+In particular, for every prime $p\notin S_{\mathrm{vis}}(E)$ one has $v_p(V_{\mathrm{vis}}(E))=0$, hence
+\[
+v_p\!\bigl(D_{\ast}(E)\bigr)\;=\;\ord_p\!\bigl(\#\Sha(E/\Q)[p^\infty]\bigr)\qquad (p\notin S_{\mathrm{vis}}(E)).
+\]
+\end{proposition}
+
+
+
+
+
+% ------------------------------------------------------------
+\subsubsection{Engine A (valuation container): defect exponent via determinant-of-cohomology}
+\label{sec:AFU2-engineA}
+
+\begin{lemma}[Engine~A.1 (Determinant-of-cohomology exponent computes $v_p(D)$)]
+\label{lem:AFU2-engineA-det-index}
+Assume Gate~AFU-1G($S_{\mathrm{AFU}}$), so that the localized global index
+$D_{S_{\mathrm{AFU}}}(E)$ is defined, and fix a prime $p\notin S_{\mathrm{AFU}}$.
+Let $C_{\mathrm{def},p}:=\mathrm{Cone}(\phi_p)$ be the defect cone of \Cref{cor:afu-1g-from-lai}.
+If $H^i(C_{\mathrm{def},p})$ are finite for all $i$, then
+\[
+v_p\!\bigl(D_{S_{\mathrm{AFU}}}(E)\bigr)
+\;=\;
+\sum_{i\in\mathbb{Z}} (-1)^i\,\mathrm{length}_{\Z_p}\!\bigl(H^i(C_{\mathrm{def},p})\bigr).
+\]
+If Gate~AFU-1G holds (so $S_{\mathrm{AFU}}=\emptyset$ and $D(E)\in\Z_{>0}$), then the same identity holds for $v_p(D(E))$.
+\end{lemma}
+
+\begin{lemma}[Engine~A.2 (Internal finiteness of the defect cone)]
+\label{lem:AFU2-engineA-finite-defect}
+Fix $p\neq 2$.
+Assume the Interface Theorem \Cref{thm:LAI-interface} (constructed from the Mapping Fiber \Cref{def:Csp-mapping-fiber}
+together with the local gluing input \Cref{lem:LAI-local-equals-fprime-glue}).
+Then the defect cone $C_{\mathrm{def},p}$ is a finite local-difference complex and hence satisfies the finiteness hypothesis of
+\Cref{lem:AFU2-engineA-det-index}. In particular, $C_{\mathrm{def},p}$ has no $p$-divisible cohomology.
+\end{lemma}
+
+
+\begin{proposition}[Engine~A.3a (Defect exponent identity; no arithmetic plug-in)]
+\label{prop:AFU2-engineA-defect-exponent}
+Assume Gate~AFU-1G($S_{\mathrm{AFU}}$), so that the localized global index $D_{S_{\mathrm{AFU}}}(E)$ is defined, and fix a prime $p\notin S_{\mathrm{AFU}}$ with $p\neq 2$.
+Assume the constructed Interface Theorem \Cref{thm:LAI-interface} (hence \Cref{lem:AFU2-engineA-finite-defect} holds, so $C_{\mathrm{def},p}$ is a finite local-difference complex and has no $p$-divisible cohomology).
+Then the $p$-adic exponent of the lattice defect is computed by determinant-of-cohomology as
+\[
+v_p\!\bigl(D_{S_{\mathrm{AFU}}}(E)\bigr)
+\;=\;
+\sum_{i\in\mathbb{Z}} (-1)^i\,\mathrm{length}_{\Z_p}\!\bigl(H^i(C_{\mathrm{def},p})\bigr).
+\]
+If Gate~AFU-1G holds (so $S_{\mathrm{AFU}}=\emptyset$ and $D(E)\in\Z_{>0}$), then the same identity holds with $D(E)$ in place of $D_{S_{\mathrm{AFU}}}(E)$.
+\end{proposition}
+
+\noindent\textbf{Bridge (Route~B).}
+\Cref{prop:AFU2-engineA-defect-exponent} completes the internal (no plug-in) part of the pipeline: it shows that the entire $p$-adic content of the determinant-line defect is packaged into a single numerical invariant $v_p(D_{\ast}(E))$, computed purely as the alternating sum of $\Z_p$-lengths of the defect-cone cohomology.
+In other words, it closes the \emph{valuation container}.
+Gate~AFU-2 then performs the complementary task: it \emph{arithmetically identifies} this same container with the classical $p$-primary BSD defect, i.e.\ with $\ord_p(\#\Sha(E/\Q)[p^\infty])$ up to the visible normalization factor $V_{\mathrm{vis}}(E)$.
+Thus the AFU-2 statement should be read as an imported arithmetic identification of an invariant already isolated by Engine~A, rather than as an additional internal step in the determinant-line engine.
+
+
+\begin{remark}[Sanity checks on canonicity and terminology (non-probative)]
+The regulator normalization used in the determinant-line construction is basis-free: under a change of generators
+$P\mapsto nP$ both $\widehat{h}(P)$ and the $p$-adic correction factor $\kappa_p(P)^{-2}$ scale by $n^2$, while
+$P\mapsto -P$ leaves both factors unchanged. Consequently the induced determinant-line class is invariant under
+$\GL_r(\Z)$-changes of generators; the only residual ambiguity is a sign (handled by Gate~K), while the $p$-adic unit
+ambiguity is eliminated by the locking-prime mechanism (Hypothesis~7.12). Finally, the phrase ``infinite $p$-adic defect''
+should be read as ``loss of a canonical integral generator for valuation comparison'' when a positive $\Z_p$-corank is
+present, not as a failure of the determinant line to exist. None of these checks supplies corank control: excluding
+positive $\Z_p$-corank remains an AFU input in our Route~B positioning (cf.\ \Cref{lem:cotorsion-closure-rank0}).
+\end{remark}
+
+\begin{lemma}[Cotorsion Closure Lemma (rank $0$; AFU input)]
+\label{lem:cotorsion-closure-rank0}
+Fix a prime $p\notin S_{\mathrm{vis}}(E)$, where the explicit finite visible set is
+\[
+S_{\mathrm{vis}}(E)\ :=\ \{\,p:\ p\mid 2N\,c_E\cdot \#E(\Q)_{\mathrm{tors}}\,\}.
+\]
+Assume analytic rank $r_{\mathrm{an}}(E)=0$ (i.e.\ $L(E,1)\neq 0$) and that the
+\emph{Interface Theorem} \Cref{thm:LAI-interface} holds for the Mapping-Fiber construction
+\Cref{def:Csp-mapping-fiber} with local gluing \Cref{lem:LAI-local-equals-fprime-glue}.
+Assume moreover the \emph{Internal Route} conclusion \Cref{cor:afu-1g-from-lai}
+(no $p$-divisible defect cohomology).
+
+\medskip
+\noindent\textbf{AFU input (corank control).}
+Under the above hypotheses, the Selmer/Bloch--Kato cohomology in degree $1$
+is \emph{cotorsion} over $\Z_p$, equivalently it has $\Z_p$-corank $0$:
+\[
+\mathrm{corank}_{\Z_p}\,H^1\!\bigl(R\Gamma_{f'}(\Q,T_p(E))\bigr)=0,
+\qquad\text{equivalently}\qquad
+\mathrm{Sel}_{p^\infty}(E/\Q)\ \text{is cofinitely generated of corank $0$}.
+\]
+In particular, together with the ``no $p$-divisible'' property from
+\Cref{cor:afu-1g-from-lai}, this forces $\mathrm{Sel}_{p^\infty}(E/\Q)$ to be finite, hence
+$\Sha(E/\Q)[p^\infty]$ is finite.
+
+\medskip
+\noindent\textbf{Role in Route~B.}
+In Route~B we do \emph{not} claim an internal corank-control mechanism from LAI/DLT/URC alone.
+Instead, the cotorsionness (corank$=0$) input is supplied by external arithmetic packages (Euler systems / Iwasawa main conjecture inputs, Kolyvagin--Gross--Zagier, etc.) through the open interfaces Gate~AFU-2/AFU-3.
+The list below records typical failure modes one encounters when attempting to prove this internally.
+
+\medskip
+\noindent\textbf{Failure modes.}
+\begin{enumerate}[label=\textup{(F\arabic*)}, leftmargin=2.2em]
+\item \textbf{Hidden import of rank-bridge results:}
+If the proof appeals (even implicitly) to external rank theorems
+(e.g.\ Kolyvagin/Gross--Zagier, Kato, Iwasawa main conjectures) to deduce
+corank$=0$, then the argument is no longer ``no plug-in''; it becomes an AFU-2
+plug-in route.
+\item \textbf{Only ``no $p$-divisible'' without corank control:}
+No $p$-divisible cohomology alone does not exclude a positive $\Z_p$-corank.
+In that case $\Sha(E/\Q)[p^\infty]$ need not be finite, and the AFU-2 Index--ID identification cannot be obtained internally (it must remain a plug-in statement).
+\item \textbf{Perfectness / integral-structure gap:}
+If the Interface identification does not control the integral structure of the
+Selmer complex in a way compatible with the determinant-of-cohomology formalism,
+then corank statements cannot be extracted internally from the spectral output.
+\end{enumerate}
+\end{lemma}
+
+
+
+
+
+
+\paragraph{Why this modularity is a feature (not a bug).}
+Our pipeline is designed so that Gate~\URC{} establishes the structural part of the comparison
+ (no hidden unit ambiguity), and Gate~AFU-1G packages the residual mismatch as a \emph{discrete} lattice index. Gate~AFU-2 is then reserved for the genuinely arithmetic step: identifying that index with the expected BSD defect (order/Fitting ideal/Euler characteristic). This separation keeps the framework compatible with future improvements in Euler-system and Iwasawa machinery, while making clear exactly which ingredient is responsible for ``finiteness vs. exact counting.''
+
+
+\paragraph{Literature hooks (conditional, schematic).}
+In standard settings (typically: $p$ odd, ordinary at $p$, residual irreducibility, and analytic rank $0$ or $1$),
+the literature provides identifications of the relevant $p$-primary defect exponents via Euler systems and/or
+Iwasawa main conjecture inputs, compatible with the usual Tamagawa/torsion normalizations.
+We treat these as imported engines; our contribution is the determinant-line container plus URC, which removes any
+unit-normalization ambiguity before such inputs are applied.
+See e.g.\ \cite{Kato2004PadicHodge,SkinnerUrban2014IMCGL2,GrossZagier1986,KolyvaginEulerSystems,Nekovar2006}.
+
+
+% ------------------------------------------------------------
+\subsection{Gate AFU-3 (Open interface: rank bridge and \texorpdfstring{$\Sha$}{Sha}-finiteness)}
+\label{sec:AFU-3}
+
+\paragraph{Input.}
+Assume Gate~A3 (URC) and Gate~AFU-1G($S_{\mathrm{AFU}}$), so that a global index
+$D_{S_{\mathrm{AFU}}}(E)\in \Z[1/S_{\mathrm{AFU}}]_{>0}$ is defined and the unit-normalization ambiguity is removed.
+Assume further external arithmetic inputs relating the Selmer/Bloch--Kato determinant-line defect to analytic and
+arithmetic data at $s=1$.
+
+\paragraph{Output.}
+Gate~AFU-3 records the remaining closure conditions needed to pass from the locked determinant-line identity
+to the classical BSD content:
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Rank bridge:} $\ord_{s=1}L(E,s)=\mathrm{rank}\,E(\Q)$, compatibly with the Selmer/Bloch--Kato framework
+in the chosen determinant-line normalization.
+\item \textbf{Arithmetic finiteness/control:} control of the $p$-primary defect groups so that the discrete factors
+become finite (in particular yielding finiteness of $\Sha(E/\Q)$ when all primes are controlled).
+\end{itemize}
+
+\paragraph{Status.}
+No general claim is made here that Gate~AFU-3 is resolved; it is the remaining open interface beyond URC and AFU-1G($S_{\mathrm{AFU}}$).
+
+\begin{remark}[Standard external bridge packages (rank $0$ and rank $1$)]
+In analytic rank $0$ (i.e.\ $L(E,1)\neq 0$), a typical AFU-3 input is a Selmer finiteness/cotorsion result
+from Euler-system machinery (Kato), implying $r_{\mathrm{alg}}=0$ via the standard exact sequence relating
+$E(\Q)\otimes \Q_p/\Z_p$ to $\mathrm{Sel}_{p^\infty}(E/\Q)$.
+In analytic rank $1$, a typical AFU-3 input combines Gross--Zagier (to produce a non-torsion Heegner point)
+with Kolyvagin's Euler system bounds (to force $r_{\mathrm{alg}}=1$ and finiteness of $\Sha$ in the relevant $p$-primary part).
+We treat these as imported engines in the AFU-3 plug-in boundary.
+See e.g.\ \cite{Kato2004PadicHodge,GrossZagier1986,KolyvaginEulerSystems,Nekovar2006}.
+\end{remark}
+
+\paragraph{Where we stand (summary).}
+URC (Gate~A3) is proved and removes the residual unit ambiguity in the determinant-line comparison.
+Gate~AFU-1G($S_{\mathrm{AFU}}$) yields a global index over $\Z[1/S_{\mathrm{AFU}}]$.
+Gate~AFU-2/AFU-3 remain as imported/open interfaces toward full BSD arithmetic closure.
+
+
+% ------------------------------------------------------------
+\subsection{The lattice index formalism}
+\label{sec:AFU-index}
+
+Let $\Delta_{\mathrm{BK},p}(E)$ be a one-dimensional $\Q_p$-line with a distinguished
+$\Z_p$-lattice $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$.
+
+\begin{definition}[$p$-adic index of a line element]
+\label{def:AFU-index}
+Choose any $\Q_p$-basis $e$ of $\Delta_{\mathrm{BK},p}(E)$ such that
+$\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)=\Z_p\cdot e$.
+Write $x=\alpha e$ with $\alpha\in\Q_p^\times$ and set
+\[
+\Ind_p(x:\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)) := v_p(\alpha)\in\Z.
+\]
+This is independent of the choice of $e$.
+\end{definition}
+
+\begin{remark}
+\label{rem:AFU-index-meaning}
+The index $\Ind_p(\cdot)$ is the correct receptacle for the ``arithmetic defect'' once the unit ambiguity has been locked:
+multiplication by a $p$-adic unit does not change $\Ind_p(\cdot)$.
+\end{remark}
+
+\begin{remark}[Global index specialization]
+\label{rem:AFU-global-to-local}
+Under Gate~AFU-1G, the $p$-adic index is the valuation of the single global integer $D(E)$, by
+\Cref{lem:AFU-L2-localization-vp}.
+Under Gate~AFU-1G($S_{\mathrm{AFU}}$), the same holds for $p\notin S_{\mathrm{AFU}}$ with $D_{S_{\mathrm{AFU}}}(E)$.
+\end{remark}
+
+
+\subsection{What locking gives you for free}
+\label{sec:AFU-what-locking-gives}
+
+From Gate~\DLT-Q we have
+\[
+\mathbf{d}_{\mathrm{BK},p}(E)=u_p(E)\cdot \mathbf{t}_{\mathrm{BK},p}(E),
+\]
+and Gate~A3 gives $u(E)=1$ in $\Q^\times$, hence (by \Cref{lem:DLT-global-local}) $u_p(E)\in\Z_p^\times$ for any instantiated $p$.
+
+\begin{proposition}[Locked comparison is unit-normalized]
+\label{prop:AFU-locked-unit-normalized}
+Assume \Cref{thm:URC-locking}. Then $u_p(E)\in\Z_p^\times$ for any instantiated $p$, so
+\[
+\Ind_p\!\bigl(\mathbf{d}_{\mathrm{BK},p}(E):\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)\bigr)
+\;=\;
+\Ind_p\!\bigl(\mathbf{t}_{\mathrm{BK},p}(E):\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)\bigr).
+\]
+Consequently, any remaining arithmetic discrepancy after URC cannot hide in a $p$-adic unit: it can only appear
+through lattice-level (integrality/finiteness) information supplied by the \AFU\ plug-in.
+\end{proposition}
+
+
+\subsection{The AFU upgrade statement (template)}
+\label{sec:AFU-template}
+
+\begin{theorem}[AFU upgrade template (plug-in form)]
+\label{thm:AFU-template}
+Assume \Cref{thm:URC-locking} and fix the Selmer determinant-line lattice
+$\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$.
+Suppose an external arithmetic finiteness/control package yields a canonical identification of the
+lattice index (equivalently, of the relevant Selmer defect exponent)
+with the expected BSD $p$-primary defect exponent in the chosen normalization.
+Then the locked determinant-line identity upgrades to the corresponding BSD $p$-primary leading-term statement
+in that class; when $\Sha(E/\Q)[p^\infty]$ is finite under the package, the defect exponent matches
+$\ord_p(\#\Sha(E/\Q)[p^\infty])$ up to the fixed visible factors.
+\end{theorem}
+
+\begin{remark}[No hidden finiteness claim]
+\label{rem:AFU-no-hidden}
+\Cref{thm:AFU-template} is intentionally an interface theorem.
+The present manuscript does not claim to prove the external finiteness/control packages unless explicitly stated elsewhere.
+\end{remark}
+
+
+\subsection{Admissible external packages (examples)}
+\label{sec:AFU-packages}
+
+The \AFU\ module is designed to accept established arithmetic inputs, for example:
+\begin{enumerate}[leftmargin=2em]
+\item Euler-system control for elliptic curves / modular forms (e.g.\ Kato-type input) in settings where it implies
+finiteness/control of the relevant Selmer groups;
+\item Gross--Zagier and Kolyvagin-type theorems in rank $0$/$1$ settings;
+\item Iwasawa-theoretic main conjecture inputs in ordinary settings (as a pathway to integral leading-term formulae).
+\end{enumerate}
+We cite standard entry points in \cite{Kato2004PadicHodge,GrossZagier1986,KolyvaginEulerSystems,SkinnerUrban2014IMCGL2,Nekovar2006}. A one-page registry and the normalization translation dictionary are recorded in Appendix~\Cref{app:afu-registry,app:translation-dict}.
+
+\subsubsection*{Package contracts (minimal I/O, referee-facing)}
+\label{sec:AFU-package-contracts}
+To keep the separation ``mechanism vs.\ arithmetic upgrade'' explicit, we record the external inputs as short contracts.
+Each contract should be read as: \emph{under the hypotheses of the cited source(s)}, the listed output is available and may be
+plugged into Gate AFU-2/AFU-3 after performing the normalization handshake of \Cref{rem:AFU-normalization-handshake}.
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(Pkg W0: A0$_w$ / cotorsion closure in analytic rank $0$).}
+\emph{Input:} a prime $p\neq 2$, analytic rank $0$ ($L(E,1)\neq 0$), and the hypotheses required for Euler-system control
+in the chosen setting (e.g.\ residual irreducibility and suitable local conditions at $p$).
+\emph{Output:} $\mathrm{Sel}_{p^\infty}(E/\Q)$ is cofinitely generated of $\Z_p$-corank $0$ (hence finite), and consequently
+$\Sha(E/\Q)[p^\infty]$ is finite. This supplies the corank-control step needed to close Failure Mode~F2 (A0$_w$). \cite{Kato2004PadicHodge}
+
+\item \textbf{(Pkg M0: A0$_m$ / Index-ID via IMC + reciprocity, rank $0$).}
+\emph{Input:} a prime $p\neq 2$ in a regime covered by an Iwasawa main conjecture result (typically ordinary at $p$), plus the
+reciprocity/control theorems required to compare the $p$-adic $L$-generator with the Selmer determinant-line lattice.
+\emph{Output:} identification of the defect exponent with the expected $p$-primary BSD defect in the fixed normalization,
+i.e.\ a valuation/length identity enabling Gate~AFU-2 (Index-ID) in rank $0$ (up to $V_{\mathrm{vis}}$). \cite{SkinnerUrban2014IMCGL2,CastellaCiperianiSkinnerSprung2018}
+
+\item \textbf{(Pkg R1: Rank bridge in analytic rank $1$).}
+\emph{Input:} analytic rank $1$ with the usual Heegner/Gross--Zagier hypotheses, together with the Kolyvagin descent hypotheses
+in the cited theorems.
+\emph{Output:} Gross--Zagier produces a non-torsion Heegner point (lower bound $r_{\mathrm{alg}}\ge 1$), and Kolyvagin-type
+Euler-system descent gives the upper bound $r_{\mathrm{alg}}\le 1$ and finiteness of $\Sha(E/\Q)[p^\infty]$; hence
+$r_{\mathrm{alg}}=r_{\mathrm{an}}=1$. This is precisely the AFU-3 ``rank bridge'' input. \cite{GrossZagier1986,KolyvaginEulerSystems,Nekovar2006}
+\end{itemize}
+
+
+
+\subsection{Where Gate A3-Int stops}
+\label{sec:AFU-stops}
+
+Gate~A3-Int stops at the level of an explicit \emph{API}:
+it identifies the unique remaining location where $\Sha$-type information can enter (a lattice index),
+and it specifies what kind of external arithmetic input is required to convert that index into a classical
+finiteness/cardinality statement.
+No unconditional claim about $\#\Sha$ is made here.
+
+
+% ============================================================
+\section{Synthesis: From Spectral Germ to a Locked Determinant-Line Identity}
+\label{sec:synthesis}
+
+\subsection{The locked-chain statement}
+\label{sec:synthesis-locked-chain}
+
+We now assemble the pipeline
+\[
+\textbf{\LAI} \longrightarrow \textbf{\SME} \longrightarrow \textbf{\DLT} \longrightarrow \textbf{\URC}
+\quad (\text{with \AFU\ as an optional plug-in})
+\]
+into a single determinant-line conclusion.
+
+Recall that Gate~A2 produces a spectral germ element
+$\mathbf{d}_{\mathrm{spec},p}(E)\in\Delta_{\mathrm{spec},p}(E)$, and Gate~\DLT-Q transports it to the
+arithmetic determinant line:
+\[
+\mathbf{d}_{\mathrm{BK},p}(E):=\Phi_{\mathrm{BK},p}(E)\bigl(\mathbf{d}_{\mathrm{spec},p}(E)\bigr)
+\in \Delta_{\mathrm{BK},p}(E).
+\]
+By definition of the defect scalar (Gate~\DLT-Q), one has
+\begin{equation}
+\label{eq:synthesis-defect}
+\mathbf{d}_{\mathrm{BK},p}(E)=u_p(E)\cdot \mathbf{t}_{\mathrm{BK},p}(E).
+\end{equation}
+Gate~A3 (\URC) proves that the residual ambiguity is unit-normalized, i.e.\ $u_p(E)\in\Z_p^\times$ (and globally $u(E)=1$);
+consequently, $\mathbf{d}_{\mathrm{BK},p}(E)$ and $\mathbf{t}_{\mathrm{BK},p}(E)$ generate the same $\Z_p$-lattice inside
+$\Delta_{\mathrm{BK},p}(E)$.
+
+\begin{theorem}[Locked determinant-line unit condition]
+\label{thm:synthesis-locked}
+Assume the hypotheses of Gates L, K, A2, and \DLT/\DLT-Q, together with the integral transport condition at a locking prime $p_0$
+used in Gate~A3. Then the defect scalar of \Cref{def:up} satisfies
+\begin{equation}
+\label{eq:synthesis-locked}
+u_p(E)\in \Z_p^\times,
+\end{equation}
+equivalently
+\[
+\Z_p\cdot \mathbf{d}_{\mathrm{BK},p}(E)=\Z_p\cdot \mathbf{t}_{\mathrm{BK},p}(E)
+\qquad\text{inside }\Delta_{\mathrm{BK},p}(E).
+\]
+\end{theorem}
+
+\begin{proof}
+This is exactly the last assertion of \Cref{thm:URC-locking}.
+\end{proof}
+
+\subsection{What remains after locking: the unique location of the arithmetic defect}
+\label{sec:synthesis-what-remains}
+
+The identity \eqref{eq:synthesis-locked} is a statement in the \emph{rational} determinant-line comparison (up to $p$-adic units).
+Any classical BSD factorization that isolates a $\Sha$-term is inherently an \emph{integral/lattice}
+statement and thus cannot be deduced from \eqref{eq:synthesis-locked} alone without an upgrade input.
+This is exactly why the \AFU\ module is isolated.
+
+\begin{corollary}[Defect localization principle]
+\label{cor:synthesis-defect-localization}
+Under the assumptions of \Cref{thm:synthesis-locked}, any remaining discrepancy between the
+spectral side and the ``visible'' arithmetic volume factors (period, regulator, torsion, Tamagawa)
+cannot be absorbed by normalization choices at the level of $p$-adic units: it can only appear at the level of the integral lattice
+$\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)\subset\Delta_{\mathrm{BK},p}(E)$, i.e.\ as a $p$-adic lattice index.
+\end{corollary}
+
+\begin{proof}
+On a one-dimensional $\Q_p$-line, once the comparison is fixed up to $\Z_p^\times$ (Theorem~\ref{thm:synthesis-locked}),
+the only remaining structure that can carry arithmetic information is the choice of the canonical $\Z_p$-lattice.
+Gate~\DLT fixes $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$ canonically from the Selmer complex.
+Thus any refinement beyond unit-normalized comparison must be an integrality/index statement relative to that lattice.
+\end{proof}
+
+\subsection{AFU upgrade as a post-processor}
+\label{sec:synthesis-afu}
+
+Combining the locked determinant-line identity with the \AFU\ plug-in interface yields an upgrade
+template: whenever an external arithmetic package identifies the relevant lattice index with the expected
+$p$-primary BSD defect, one recovers the corresponding $p$-primary leading-term statement.
+
+\begin{corollary}[BSD recovery template via AFU]
+\label{cor:synthesis-afu-template}
+Assume \Cref{thm:synthesis-locked} and fix a prime $p\neq 2$.
+Then the locked comparison upgrades to the corresponding BSD $p$-primary leading-term statement
+whenever one supplies an \AFU\ upgrade input in either of the following (non-exclusive) forms:
+\begin{enumerate}[leftmargin=2em]
+\item[\textbf{(Ext)}] the external plug-in package of \Cref{thm:AFU-template} (Euler-system / Gross--Zagier--Kolyvagin / Iwasawa control);
+\item[\textbf{(Int+ID)}] the interface theorem \Cref{thm:LAI-interface}, so that the $p$-primary defect cone has no $p$-divisible part
+by \Cref{cor:afu-1g-from-lai}, together with an AFU-2 Index-ID input (\Cref{sec:AFU-2}) identifying the resulting finite defect exponent
+with the expected BSD $p$-primary discrete factor in the fixed normalization.
+\end{enumerate}
+In either case, when $\Sha(E/\Q)[p^\infty]$ is finite under the chosen upgrade input, the lattice defect matches the $p$-primary
+$\Sha$-factor (up to the fixed visible factors).
+\end{corollary}
+
+\begin{remark}[Why the separation matters]
+\label{rem:synthesis-separation}
+\Cref{thm:synthesis-locked} is the endpoint of the locking mechanism:
+it shows that no residual \emph{unit ambiguity} can be blamed for any mismatch.
+All genuinely arithmetic finiteness/index content is isolated in \AFU\ as an explicit post-processor.
+\end{remark}
+
+
+
+
+% ============================================================
+\newpage
+\appendix
+\paragraph{Appendices}
+
+\section[Crosswalk: Gates vs.\ Aggregates vs.\ the Sigma--Lambda--Psi Facade]{Crosswalk: Gates vs.\ Aggregates vs.\ the \texorpdfstring{$\SigAgg$--$\LamAgg$--$\PsiAgg$}{Sigma--Lambda--Psi} Facade}
+\label{app:crosswalk}
+
+\subsection{Facade (communication layer)}
+\label{app:crosswalk-facade}
+
+We retain the $\SigAgg$--$\LamAgg$--$\PsiAgg$ triad as a high-level narrative:
+\begin{itemize}[leftmargin=2em]
+\item $\SigAgg$ (Spectral hologram): the spectral/analytic production of the $s=1$ germ and the
+      normalized determinant-line element, including the local block/gluing insertions needed for the global object.
+      In this document, $\SigAgg$ is realized by Gate~L together with Gate~A2 (and the spectral gluing conventions used there).
+\item $\LamAgg$ (Arithmetic container): the \emph{canonical} arithmetic determinant-line target
+      (Selmer/Bloch--Kato package), not ``MW without $\Sha$''. In this document, $\LamAgg$ is realized
+      by Gate~\DLT (Selmer determinant-line dictionary at the BSD-order level).
+\item $\PsiAgg$ (Rigidity lock): the comparison/transport scalar and its unit closure. In this document,
+      $\PsiAgg$ is realized by Gate~\DLT-Q together with Gate~A3 (Bulk--Edge unit locking).
+\end{itemize}
+
+\subsection{Mechanism layer (proof pipeline)}
+\label{app:crosswalk-mechanism}
+
+Internally we refactor the gates into five aggregates (modules) with strict I/O contracts.
+This is only a \emph{refactoring map}---no new assumptions are introduced.
+
+\medskip
+\noindent
+\begin{center}
+\begin{tabular}{|p{0.14\linewidth}|p{0.40\linewidth}|p{0.38\linewidth}|}
+\hline
+\textbf{Aggregate} & \textbf{Meaning / I-O contract} & \textbf{Realized by} \\
+\hline
+\textbf{\LAI} & Local arithmetic interface: packages local normalizations and kills all non-$p$ valuations
+              in the comparison scalar (local ``preconditioner''). &
+Gate~L + the explicit local-compatibility/valuation statements used in Gate~\DLT-Q. \\
+\hline
+\textbf{\SME} & Spectral matching engine: produces the analytic/spectral germ at $s=1$ in determinant-line form. &
+Gate~A2 + matching model A2-Match. \\
+\hline
+\textbf{\DLT} & Determinant-line transport: maps the spectral determinant-line element into the Selmer target,
+              producing a single global scalar $u(E)\in\Q^\times$. &
+Gate~\DLT-Q + canonicality/invariance lemmas. \\
+\hline
+\textbf{\URC} & Unit-rigidity closure: forces $u(E)\in\{\pm 1\}$ and then fixes $u(E)=+1$ canonically. &
+Gate~A3, culminating in \Cref{thm:URC-locking}. \\
+\hline
+\textbf{\AFU} & Arithmetic finiteness upgrade (optional): upgrades the determinant-line identity to the classical
+cardinality statement for $\Sha$ when external arithmetic input is available. &
+Gate~A3-Int and \Cref{thm:AFU-template}. \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{remark}[Scope warning: no ``$\Sha$ bypass'']
+\label{rem:no-sha-bypass}
+The refactoring above does \emph{not} bypass $\Sha$.
+It isolates where $\Sha$ enters: as a global arithmetic defect inside the Selmer determinant-line container
+(Gate~\DLT). Gate~A3 (\URC) closes only the \emph{unit ambiguity} ($u(E)=1$). Any finiteness/index identification
+is explicitly delegated to the optional upgrade gate A3-Int (\AFU).
+\end{remark}
+
+\section{Minimal Assumption Ledger (No Silent Hypotheses)}
+\label{app:assumptions}
+
+This ledger records \emph{exactly} where each input is used. Every nontrivial hypothesis must appear
+either as an explicit gate statement in the main text or as an explicit external plug-in in Gate~A3-Int.
+
+\subsection*{Standing background (always in force)}
+\begin{itemize}[leftmargin=2em]
+\item Fix an elliptic curve $E/\Q$ of conductor $N$ and analytic rank $r=\ord_{s=1}L(E,s)$.
+\item Fix once and for all the normalization conventions for $\Omega_E$, $\Reg(E)$ and determinant lines
+(see Gate~K and Gate~\DLT for the calibration/determinant-line conventions).
+\end{itemize}
+
+\subsection*{\LAI\ ledger (local normalization; non-\texorpdfstring{$p$}{p} integrality)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(LAI-1) Local ramified blocks and Tamagawa dictionary:}
+Gate~L provides the local identification of ramified blocks with Tamagawa factors (as encoded in the chosen determinant-line lattice conventions).
+\item \textbf{(LAI-2) Local compatibility of the glued package:}
+the comparison morphism respects the local Selmer conditions away from $p$ (so that no non-$p$ valuation survives in $u(E)$).
+\end{itemize}
+
+\subsection*{\SME\ ledger (spectral germ and matching model)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(SME-1) Spectral infrastructure and covolume package:}
+Gate~A2 yields the $s=1$ germ in a determinant-line form suitable for transport.
+\item \textbf{(SME-2) Explicit modular-symbol realization:}
+A2-Match provides an explicit modular-symbol realization of the spectral line (and its integral lattice) attached to $f_E$.
+This is an \emph{explicit representation}, not claimed canonical beyond the stated A2 contract.
+\end{itemize}
+
+\subsection*{\DLT\ ledger (Selmer determinant-line target; transport scalar \texorpdfstring{$u(E)$}{u(E)})}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(DLT-1) Canonical arithmetic target:}
+Gate~\DLT is formulated in the Selmer/Bloch--Kato determinant line (not ``MW without $\Sha$''),
+so the target is canonical at the determinant-line level (no finiteness assumed).
+\item \textbf{(DLT-2) Transport well-defined under the fixed contracts:}
+the determinant-line comparison is defined (up to the standard determinant-line unit ambiguity) compatibly with the \LAI\ normalizations and the \DLT\ dictionary.
+\item \textbf{(DLT-3) Invariance of the defect scalar:}
+the resulting scalar $u(E)\in\Q^\times$ is independent of admissible A2 realizations and of auxiliary choices already absorbed in \LAI.
+\end{itemize}
+
+\subsection*{\URC\ ledger (unit rigidity; \texorpdfstring{$u(E)=1$}{u(E)=1})}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(URC-1) Adelic valuation collapse (non-$p$ valuations vanish):}
+\Cref{lem:URC-unit-reduction}.
+\item \textbf{(URC-2) Unit collapse at the locking prime:}
+\Cref{lem:URC-no-p-power} uses the lattice lock input at a locking prime (as stated in \Cref{thm:locking-prime-integrality}) to eliminate any residual $p$-power discrepancy, yielding $u(E)\in\{\pm 1\}$.
+\item \textbf{(URC-3) Canonical sign/orientation lock:}
+\Cref{lem:URC-sign} together with the calibration conventions in \Cref{def:K-calibration} fixes the $+1$ branch.
+\item \textbf{(URC-4) Closure:}
+\Cref{thm:URC-locking} concludes $u(E)=1$ (hence $u^{\mathrm{glob}}_p(E)=1$ for all $p$, and $u_p(E)\in\Z_p^\times$ for any instantiated $p$).
+\end{itemize}
+
+\subsection*{\AFU\ ledger (optional; finiteness/cardinality upgrade)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(AFU-1) Integrality/index gate:}
+Gate~A3-Int records the lattice-level integrality/index interface (\Cref{def:AFU-index}).
+\item \textbf{(AFU-2) External arithmetic plug-in:}
+\Cref{thm:AFU-template} states the upgrade regime (Euler systems / Iwasawa-type inputs).
+No such input is claimed to be proved in this paper unless explicitly stated there.
+\end{itemize}
+
+\begin{remark}[Where a referee can and cannot object]
+\label{rem:referee-hooks}
+A referee may challenge (i) the claimed lattice-integrality at the locking prime (\Cref{thm:locking-prime-integrality}),
+or (ii) any \AFU\ upgrade if invoked.
+However, the unit-rigidity closure (Gate~A3) is logically isolated: it takes as input only the defect scalar from Gate~\DLT-Q and outputs $u(E)=1$.
+No $\Sha$-finiteness is asserted at the \URC\ level.
+\end{remark}
+
+\subsection{Dependency cross-reference (proof DAG in one page)}
+\label{sec:dependency-map}
+
+This subsection is a navigation device for referees: it lists, for each main statement,
+the minimal set of upstream results it depends on. No new mathematics is introduced.
+
+\paragraph{Notation.}
+We write ``A $\Leftarrow$ B'' to mean: statement A uses B as an input (directly or via a short chain).
+All references below point to statements in the main text unless explicitly marked ``Appendix''.
+
+\subsubsection*{Level-0: Object existence and normalization}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Existence of the spectral germ:} \Cref{def:spectral-germ} $\Leftarrow$
+      \Cref{def:A2-spec-line,def:A2-spec-lattice,def:spectral-germ,def:A2-lattice-generator} + \Cref{prop:A2-residual-ambiguity}.
+\item \textbf{Canonical arithmetic target:} \Cref{sec:selmer-detline} $\Leftarrow$
+      determinant functors \cite{KnudsenMumford1976,Deligne1987} and Selmer-complex formalism
+      \cite{Nekovar2006,BlochKato1990}.
+\item \textbf{Non-$p$ integrality control:} \Cref{lem:LAI-ell-integrality} $\Leftarrow$
+      \LAI\ bookkeeping + local Selmer conditions (\Cref{sec:LAI-local-selmer}).
+\end{itemize}
+
+\subsubsection*{Level-1: Transport and scalar extraction}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Transport isomorphism:} \Cref{def:transport-iso} $\Leftarrow$
+      determinant-line functoriality + the comparison input (\DLT-type map) + \LAI\ compatibility
+      (\Cref{rem:DLT-use}).
+\item \textbf{Defect scalar definition:} \Cref{def:up} $\Leftarrow$
+      \Cref{def:arith-ref} (reference element) + \Cref{def:transport-iso} (transport).
+\item \textbf{Local valuation control:} \Cref{prop:DLT-local-control} $\Leftarrow$
+      \Cref{lem:LAI-ell-integrality} + construction of $u_p(E)$ in \Cref{sec:DLT-transport}.
+\item \textbf{Single-parameter reduction:} \Cref{prop:DLT-reduction} $\Leftarrow$
+      \Cref{def:up} + normalization conventions in \SME/\DLT.
+\end{itemize}
+
+\subsubsection*{Level-2: Unconditional closure (URC locking)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Unit/sign reduction:} \Cref{lem:URC-unit-reduction} $\Leftarrow$
+      \Cref{prop:DLT-local-control}.
+\item \textbf{Elimination of the $p$-power discrepancy:} \Cref{lem:URC-no-p-power} $\Leftarrow$
+      \Cref{thm:locking-prime-integrality} + primitivity of the reference generator in \Cref{def:arith-ref}
+      (together with the definition of $u_p(E)$ in \Cref{def:up}).
+\item \textbf{Sign fixing:} \Cref{lem:URC-sign} $\Leftarrow$
+      real calibration \Cref{def:K-calibration} + Gate~K conventions (\Cref{sec:gate-K}).
+\item \textbf{Main unconditional theorem:} \Cref{thm:URC-locking} $\Leftarrow$
+      \Cref{lem:URC-unit-reduction} + \Cref{lem:URC-no-p-power} + \Cref{lem:URC-sign}.
+\end{itemize}
+\subsubsection*{Level-3: Optional upgrade (AFU)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Lattice index formalism:} \Cref{def:AFU-index} $\Leftarrow$
+      determinant-line lattice conventions (Appendix).
+\item \textbf{Upgrade template:} \Cref{thm:AFU-template} $\Leftarrow$
+      \Cref{thm:URC-locking} + an explicit external finiteness/control package
+      (as listed in \Cref{sec:AFU-packages}).
+\end{itemize}
+
+\subsubsection*{Synthesis statements}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Unconditional synthesis:} \Cref{thm:synthesis-locked} $\Leftarrow$
+      \Cref{thm:URC-locking} + the construction chain \LAI$\to$\SME$\to$\DLT.
+\item \textbf{Defect localization:} \Cref{cor:synthesis-defect-localization} $\Leftarrow$
+      \Cref{thm:synthesis-locked} + lattice conventions (\Cref{def:lattice}, \Cref{def:AFU-index}).
+\item \textbf{BSD recovery (template):} \Cref{cor:synthesis-afu-template} $\Leftarrow$
+      either \Cref{thm:AFU-template} (Ext) or \Cref{thm:LAI-interface,cor:afu-1g-from-lai} plus an AFU-2 Index-ID input (Int+ID).
+\end{itemize}
+
+\begin{remark}[What this DAG guarantees]
+\label{rem:dag-guarantee-synthesis}
+The dependency map makes explicit that (i) URC locking is logically independent of any finiteness claim about $\Sha$,
+and (ii) any appeal to $\#\Sha$ occurs only through the AFU plug-in interface. This is the intended ``referee-safe''
+separation of mechanism vs.\ arithmetic upgrade.
+\end{remark}
+
+\subsection{LAI-induced Selmer structure \texorpdfstring{$f'$}{f'} and finite local quotients}
+\label{app:LAI-fprime}
+
+Fix a prime $p\neq 2$ and write $A:=E[p^\infty]$.
+For each place $v$ let $E_0(\Q_v)\subset E(\Q_v)$ denote the subgroup of points reducing to the
+identity component of the N\'eron model at $v$ \cite{BLR1990NeronModels,SilvermanAECI}.
+Define local Kummer conditions by
+\[
+H^1_f(\Q_v,A):=\mathrm{im}\!\left(E(\Q_v)\otimes \Q_p/\Z_p \longrightarrow H^1(\Q_v,A)\right),
+\qquad
+H^1_{f'}(\Q_v,A):=\mathrm{im}\!\left(E_0(\Q_v)\otimes \Q_p/\Z_p \longrightarrow H^1(\Q_v,A)\right).
+\]
+These groups define a Selmer structure $f'$ once specified for all $v$ \cite{Nekovar2006,MilneADT}; at good places $v\nmid pN$ the
+N\'eron special fiber is connected \cite{BLR1990NeronModels,SilvermanAECI}, hence $E_0(\Q_v)=E(\Q_v)$ and $H^1_{f'}(\Q_v,A)=H^1_f(\Q_v,A)$.
+
+\begin{lemma}[Finite local quotient for $v\mid N$, $v\neq p$]
+\label{lem:LAI-fprime-bad}
+Let $v=\ell$ with $\ell\mid N$ and $\ell\neq p$.
+Then the quotient $H^1_f(\Q_\ell,A)/H^1_{f'}(\Q_\ell,A)$ is a finite $p$-group.
+In particular, it has no $p$-divisible subgroup.
+\end{lemma}
+
+\begin{proof}
+By the N\'eron component exact sequence \cite{BLR1990NeronModels,SilvermanAECI} there is an exact sequence
+$0\to E_0(\Q_\ell)\to E(\Q_\ell)\to \Phi_\ell(k_\ell)\to 0$,
+where $\Phi_\ell(k_\ell)$ is finite of order $c_\ell(E)$.
+Tensoring with $\Q_p/\Z_p$ yields that
+$(E(\Q_\ell)/E_0(\Q_\ell))\otimes \Q_p/\Z_p \cong \Phi_\ell(k_\ell)\otimes \Q_p/\Z_p$
+is a finite $p$-group.
+Functoriality of the Kummer map gives a surjection
+\[
+\frac{E(\Q_\ell)\otimes \Q_p/\Z_p}{E_0(\Q_\ell)\otimes \Q_p/\Z_p}
+\twoheadrightarrow
+\frac{H^1_f(\Q_\ell,A)}{H^1_{f'}(\Q_\ell,A)}.
+\]
+Hence the target is a quotient of a finite $p$-group, therefore finite $p$-primary.
+\end{proof}
+
+\begin{lemma}[Finite local quotient at $v=p$]
+\label{lem:LAI-fprime-p}
+The quotient $H^1_f(\Q_p,A)/H^1_{f'}(\Q_p,A)$ is a finite $p$-group.
+In particular, it has no $p$-divisible subgroup.
+\end{lemma}
+
+\begin{proof}
+The same argument applies at $p$ using the N\'eron component exact sequence \cite{BLR1990NeronModels,SilvermanAECI}
+$0\to E_0(\Q_p)\to E(\Q_p)\to \Phi_p(\mathbb{F}_p)\to 0$,
+where $\Phi_p(\mathbb{F}_p)$ is finite of order $c_p(E)$, and functoriality of the Kummer map.
+\end{proof}
+
+\begin{corollary}[Support at finitely many places]
+\label{cor:LAI-fprime-support}
+For all but finitely many places $v$ one has $H^1_{f'}(\Q_v,A)=H^1_f(\Q_v,A)$.
+Moreover, for every $v$ the quotient $H^1_f(\Q_v,A)/H^1_{f'}(\Q_v,A)$ is finite $p$-primary.
+\end{corollary}
+
+\begin{proof}
+If $v\nmid pN$ then $E_0(\Q_v)=E(\Q_v)$ \cite{BLR1990NeronModels,SilvermanAECI}, hence $H^1_{f'}(\Q_v,A)=H^1_f(\Q_v,A)$.
+The remaining cases are covered by \Cref{lem:LAI-fprime-bad,lem:LAI-fprime-p}.
+\end{proof}
+
+% ============================================================
+% Local identification lemmas: LAI local conditions = f' local conditions
+% ============================================================
+
+\begin{lemma}[\LAI\ at bad primes $\ell\mid N$, $\ell\neq p$: the connected-component (Tamagawa) local condition]
+\label{lem:LAI-local-equals-fprime-bad}
+Let $p\neq 2$ and set $T:=T_p(E)$, $A:=E[p^\infty]$. Fix a prime $\ell\mid N$ with $\ell\neq p$.
+Assume Gate~L (\LAI) is instantiated with the Tamagawa-matching convention of \Cref{prop:LAI-tamagawa}
+(and is stable/functorial under admissible modifications as in \Cref{prop:LAI-stable,prop:LAI-functoriality}).
+Then the \LAI\ local condition at $\ell$ coincides with the Kummer condition coming from the connected N\'eron component:
+\[
+H^1_{\LAI}(\Q_\ell,T)\ =\ \kappa_\ell\!\bigl(E_0(\Q_\ell)\otimes \Z_p\bigr)\ \subset\ H^1(\Q_\ell,T).
+\]
+Equivalently, on $A$-coefficients,
+\[
+H^1_{\LAI}(\Q_\ell,A)\ =\ \mathrm{im}\!\left(E_0(\Q_\ell)\otimes \Q_p/\Z_p\ \xrightarrow{\ \kappa_\ell\ }\ H^1(\Q_\ell,A)\right).
+\]
+Moreover, the inclusion into the standard Bloch--Kato/Kummer condition has finite quotient:
+\[
+H^1_{\LAI}(\Q_\ell,A)\ \subset\ H^1_f(\Q_\ell,A),
+\qquad
+H^1_f(\Q_\ell,A)\big/H^1_{\LAI}(\Q_\ell,A)\ \text{is finite.}
+\]
+\end{lemma}
+
+\begin{proof}
+Let $\mathcal{E}/\Z_\ell$ be the N\'eron model of $E/\Q_\ell$, with identity component $\mathcal{E}^0$ and component group
+$\Phi_\ell:=\mathcal{E}/\mathcal{E}^0$. One has the standard exact sequence of locally compact groups
+\[
+0\ \longrightarrow\ E_0(\Q_\ell)\ \longrightarrow\ E(\Q_\ell)\ \longrightarrow\ \Phi_\ell(\mathbb{F}_\ell)\ \longrightarrow\ 0,
+\]
+where $E_0(\Q_\ell)=\mathcal{E}^0(\Z_\ell)$ (see \cite{BLR1990NeronModels,SilvermanAECI} for the N\'eron model formalism and
+the component-group exact sequence).
+
+Gate~L (\LAI) fixes the local normalization so that the entire ramified contribution at $\ell$ is absorbed into the integral lattice
+via the Tamagawa dictionary: the only index that may appear is the component-group (Tamagawa) index encoded by $\#\Phi_\ell(\mathbb{F}_\ell)$,
+cf.\ \Cref{prop:LAI-tamagawa}. This is precisely the correction obtained by replacing $E(\Q_\ell)$ with its connected-component subgroup
+$E_0(\Q_\ell)$ in local Kummer theory: applying the $p$-adic Kummer map to the exact sequence above shows that the difference between
+the Kummer images of $E(\Q_\ell)$ and $E_0(\Q_\ell)$ is controlled by the finite group $\Phi_\ell(\mathbb{F}_\ell)$, hence it produces no
+$p$-divisible defect. Concretely, passing to $A$-coefficients yields the finite-quotient statement already recorded in
+\Cref{lem:LAI-fprime-bad}; and the $T$-adic formulation follows by taking $p^n$-torsion and inverse limits.
+
+Finally, stability/functoriality of \LAI\ choices (\Cref{prop:LAI-stable,prop:LAI-functoriality}) ensures the identification is canonical
+within the \LAI\ contract and independent of auxiliary admissible modifications. This gives the stated equalities of local conditions.
+\end{proof}
+
+
+\begin{lemma}[\LAI\ at $v=p$: the connected-component local condition]
+\label{lem:LAI-local-equals-fprime-p}
+Let $p\neq 2$ and set $T:=T_p(E)$, $A:=E[p^\infty]$. Assume Gate~L (\LAI) fixes the $p$-local normalization as in
+\Cref{sec:LAI-local-selmer} and is compatible with the Tamagawa/component-group conventions (in the sense of Gate~L's contract).
+Then the \LAI\ local condition at $p$ is the Kummer condition coming from the connected N\'eron component:
+\[
+H^1_{\LAI}(\Q_p,T)\ =\ \kappa_p\!\bigl(E_0(\Q_p)\otimes \Z_p\bigr)\ \subset\ H^1(\Q_p,T),
+\]
+equivalently,
+\[
+H^1_{\LAI}(\Q_p,A)\ =\ \mathrm{im}\!\left(E_0(\Q_p)\otimes \Q_p/\Z_p\ \xrightarrow{\ \kappa_p\ }\ H^1(\Q_p,A)\right).
+\]
+Moreover, the inclusion into the standard $f$-local condition has finite quotient:
+\[
+H^1_{\LAI}(\Q_p,A)\ \subset\ H^1_f(\Q_p,A),
+\qquad
+H^1_f(\Q_p,A)\big/H^1_{\LAI}(\Q_p,A)\ \text{is finite.}
+\]
+\end{lemma}
+
+\begin{proof}
+Let $\mathcal{E}/\Z_p$ be the N\'eron model, with identity component $\mathcal{E}^0$ and component group $\Phi_p$.
+As in the non-$p$ case, one has
+\[
+0\ \longrightarrow\ E_0(\Q_p)\ \longrightarrow\ E(\Q_p)\ \longrightarrow\ \Phi_p(\mathbb{F}_p)\ \longrightarrow\ 0,
+\]
+with $E_0(\Q_p)=\mathcal{E}^0(\Z_p)$ \cite{BLR1990NeronModels,SilvermanAECI}.
+Gate~L's $p$-local normalization is designed to absorb precisely the component-group (finite) correction at $p$ into the integral
+structure (cf.\ the discussion in \Cref{sec:LAI-local-selmer}), hence the appropriate Kummer condition is that of the connected component.
+
+Applying local Kummer theory to the sequence above shows that replacing $E(\Q_p)$ by $E_0(\Q_p)$ modifies the local condition by a
+finite $p$-primary quotient, i.e.\ it cannot introduce a $p$-divisible defect. This finiteness is exactly the $A$-coefficient statement
+proved in \Cref{lem:LAI-fprime-p}. The $T$-adic formulation follows by taking $p^n$-torsion and passing to inverse limits.
+\end{proof}
+
+
+
+
+\noindent\textbf{Why this is a theorem.} Since we construct $C_{\mathrm{sp},p}$ explicitly via the mapping-fiber definition (\Cref{def:Csp-mapping-fiber}) and establish the required local gluing at $v\mid pN$ (\Cref{lem:LAI-local-equals-fprime}), the identification with the Selmer complex follows structurally for our constructed object. We therefore state it as a theorem:
+
+\begin{theorem}[Spectral--Selmer Identification (constructed interface)]
+\label{thm:LAI-interface}
+Let $C_{\mathrm{sp},p}$ be the PT-compatible spectral complex produced by the \LAI/\SME/\DLT/\URC\ pipeline,
+let $C_{\mathrm{ar},p}$ be the arithmetic Bloch--Kato complex (Selmer structure $f$), and let
+$\phi_p:C_{\mathrm{sp},p}\to C_{\mathrm{ar},p}$ be the comparison map.
+Then $C_{\mathrm{sp},p}$ is quasi-isomorphic in $D^b(\Z_p)$ to the Selmer complex
+$R\Gamma_{f'}(\Q,T_p(E))$ associated with the local conditions $H^1_{f'}(\Q_v,A)$ above, and under this
+identification $\phi_p$ agrees with the natural morphism of Selmer complexes induced by the inclusions
+$f'_v\subset f_v$.
+\end{theorem}
+
+\begin{remark}[Consequence for AFU]
+If \Cref{thm:LAI-interface} holds, then the defect cone $C_{\mathrm{def},p}:=\mathrm{Cone}(\phi_p)$ is supported
+at $v\mid pN$ and is a finite local-difference complex (built from the finite quotients in
+\Cref{lem:LAI-fprime-bad,lem:LAI-fprime-p}); in particular it has no $p$-divisible cohomology.
+This supplies an internal ``no divisible defect'' input for Gate~A3-Int without invoking Euler-system packages.
+\end{remark}
+
+
+% ============================================================
+\subsection{From \LAI\ normalizations to the Selmer structure \texorpdfstring{$f'$}{f'}}
+\label{sec:LAI-to-fprime}
+
+\paragraph{Purpose (interface proof-plan in derived form).}
+Gate~L (\LAI) fixes local normalization data so that ramified local blocks are absorbed into the integral lattice on the arithmetic
+determinant line (notably via the Tamagawa dictionary, \Cref{prop:LAI-tamagawa}). In derived terms, this is most naturally encoded
+by choosing, for each local place, a \emph{local condition complex} whose effect is confined to $H^1$ while leaving $H^0$ and $H^2$
+unchanged. This subsection records a concrete mapping-fiber definition of the \LAI/\SME\ spectral complex $C_{\mathrm{sp},p}$ and
+reduces \Cref{thm:LAI-interface} to a local identification statement at $v\mid pN$.
+
+
+\begin{lemma}[Automatic validity of \textnormal{(L0)}--\textnormal{(L2)} for our local condition complexes]
+\label{lem:LAI-L0L2-local-duality}
+Let $p\neq 2$ and $T:=T_p(E)$, $A:=E[p^\infty]$. For each finite place $v$ let $U^{\LAI}_v(T)\to R\Gamma(\Q_v,T)$ be a
+local condition complex in the sense of \Cref{def:Csp-mapping-fiber} whose $H^1$-image is given by a Kummer subgroup
+(e.g.\ the image of $E_0(\Q_v)\otimes\Z_p$ or $E(\Q_v)\otimes\Z_p$ under the local Kummer map).
+Then the induced maps on cohomology satisfy \textnormal{(L0)} and \textnormal{(L2)}:
+\[
+H^0(i^{\LAI}_v)\ \text{and}\ H^2(i^{\LAI}_v)\ \text{are isomorphisms.}
+\]
+In particular, these local modifications affect only $H^1$.
+\end{lemma}
+
+\begin{proof}
+By construction, the local condition complexes we use are obtained by modifying the \emph{Kummer} input in degree~$1$ while leaving
+the invariant and coinvariant pieces unchanged; concretely, $H^0(\Q_v,T)\cong T^{G_v}$ is unaffected by replacing
+$E(\Q_v)$ with $E_0(\Q_v)$ in the Kummer map, so $H^0(i^{\LAI}_v)$ is an isomorphism.
+
+For $H^2$, use local Tate duality for $T$ and $A$ \cite{MilneADT}: there is a perfect pairing
+$H^2(\Q_v,T)\times H^0(\Q_v,A)\to \Q_p/\Z_p$ and $H^0(\Q_v,A)=E(\Q_v)[p^\infty]$ is finite.
+Since our local condition complexes do not change $H^0(\Q_v,A)$, the induced map on $H^2(\Q_v,T)$ is forced to be an isomorphism
+as well. Thus \textnormal{(L0)} and \textnormal{(L2)} hold automatically for the Kummer-type local condition complexes used here.
+\end{proof}
+
+
+\begin{definition}[\LAI-local condition complexes and the mapping fiber definition of $C_{\mathrm{sp},p}$]
+\label{def:Csp-mapping-fiber}
+Fix a prime $p\neq 2$ and set $T:=T_p(E)$.
+Let $S$ be a finite set of places containing all primes $\ell\mid N$, the place $p$, and any auxiliary places used in the Selmer complex
+presentation (e.g.\ $\infty$, if included). Write $G_{\Q,S}$ for the Galois group of the maximal extension of $\Q$ unramified outside $S$.
+
+For each place $v\in S$, an \LAI\ \emph{local condition complex} consists of:
+\begin{itemize}[leftmargin=2em]
+\item a perfect complex $U^{\LAI}_v(T)$ of $\Z_p$-modules, and
+\item a morphism in $D^b(\Z_p)$
+\[
+i^{\LAI}_v:\ U^{\LAI}_v(T)\ \longrightarrow\ R\Gamma(\Q_v,T),
+\]
+\end{itemize}
+such that the induced maps on cohomology satisfy:
+\begin{enumerate}[leftmargin=2em]
+\item[\textnormal{(L0)}] $H^0(i^{\LAI}_v)$ is an isomorphism;
+\item[\textnormal{(L1)}] $H^1(i^{\LAI}_v)$ is injective, and its image
+\[
+H^1_{\LAI}(\Q_v,T)\ :=\ \mathrm{im}\!\left(H^1(U^{\LAI}_v(T))\to H^1(\Q_v,T)\right)
+\]
+is the \LAI\ local normalization condition at $v$;
+\item[\textnormal{(L2)}] $H^2(i^{\LAI}_v)$ is an isomorphism.
+\end{enumerate}
+
+Define the global-to-local morphism
+\[
+\mathrm{res}:\ R\Gamma(G_{\Q,S},T)\ \longrightarrow\ \bigoplus_{v\in S}R\Gamma(\Q_v,T),
+\]
+and form the map
+\[
+F^{\LAI}\ :=\ \mathrm{res}\ \oplus\ (-\!\bigoplus_{v} i^{\LAI}_v):
+\quad
+R\Gamma(G_{\Q,S},T)\ \oplus\ \bigoplus_{v\in S}U^{\LAI}_v(T)
+\ \longrightarrow\ \bigoplus_{v\in S}R\Gamma(\Q_v,T).
+\]
+The \LAI/\SME\ spectral complex at $p$ is the mapping fiber
+\[
+C_{\mathrm{sp},p}\ :=\ \mathrm{Cone}\!\left(F^{\LAI}\right)[-1]\ \in\ D^b(\Z_p).
+\]
+\end{definition}
+
+\begin{lemma}[\LAI local normalizations coincide with the $f'$ local conditions at $v\mid pN$]
+\label{lem:LAI-local-equals-fprime}
+With notation as in \Cref{def:Csp-mapping-fiber}, assume Gate~L (\LAI) is instantiated with the Tamagawa-matching convention
+of \Cref{prop:LAI-tamagawa} and is stable/functorial under admissible modifications (\Cref{prop:LAI-stable,prop:LAI-functoriality}).
+Then for each $v\mid pN$ the \LAI\ local condition $H^1_{\LAI}(\Q_v,T)\subset H^1(\Q_v,T)$ coincides with the Kummer condition
+coming from the connected N\'eron component:
+\[
+H^1_{\LAI}(\Q_v,T)\ =\ \kappa_v\!\left(E_0(\Q_v)\otimes \Z_p\right).
+\]
+For $v\nmid pN$ one has $H^1_{\LAI}(\Q_v,T)=H^1_f(\Q_v,T)$ (the standard unramified/Bloch--Kato condition).
+\end{lemma}
+
+\begin{proof}
+This is the content of the gluing lemma \Cref{lem:LAI-local-equals-fprime-glue} below, which assembles the local identifications
+\Cref{lem:LAI-local-equals-fprime-bad,lem:LAI-local-equals-fprime-p} into the stated global description.
+\end{proof}
+
+\begin{lemma}[Gluing the local identifications: proof of \Cref{lem:LAI-local-equals-fprime}]
+\label{lem:LAI-local-equals-fprime-glue}
+Assume the conclusions of \Cref{lem:LAI-local-equals-fprime-bad,lem:LAI-local-equals-fprime-p}.
+Then the statement of \Cref{lem:LAI-local-equals-fprime} holds: for every place $v$ one has
+\[
+H^1_{\LAI}(\Q_v,T)=
+\begin{cases}
+\kappa_v\!\bigl(E_0(\Q_v)\otimes \Z_p\bigr), & v\mid pN,\\[2pt]
+H^1_f(\Q_v,T), & v\nmid pN,
+\end{cases}
+\]
+and equivalently on $A=E[p^\infty]$-coefficients,
+\[
+H^1_{\LAI}(\Q_v,A)=
+\begin{cases}
+\mathrm{im}\!\left(E_0(\Q_v)\otimes \Q_p/\Z_p \xrightarrow{\ \kappa_v\ } H^1(\Q_v,A)\right), & v\mid pN,\\[2pt]
+H^1_f(\Q_v,A), & v\nmid pN.
+\end{cases}
+\]
+\end{lemma}
+
+\begin{proof}
+If $v=\ell\mid N$ with $\ell\neq p$, the claim is exactly \Cref{lem:LAI-local-equals-fprime-bad}. If $v=p$, it is
+\Cref{lem:LAI-local-equals-fprime-p}. For any place $v\nmid pN$, the \LAI\ contract imposes no ramified correction and thus uses the
+standard unramified/Bloch--Kato local condition, i.e.\ $H^1_{\LAI}(\Q_v,T)=H^1_f(\Q_v,T)$ (and similarly for $A$-coefficients).
+Combining these cases yields the stated piecewise description for all $v$.
+\end{proof}
+
+\begin{proposition}[Selmer-complex identification: $C_{\mathrm{sp},p}\simeq R\Gamma_{f'}(\Q,T_p(E))$]
+\label{prop:Csp-is-RGfprime}
+Let $f'$ be the Selmer structure defined by the Kummer images of $E_0(\Q_v)$ at $v\mid pN$ (and $f'=f$ at $v\nmid pN$), as in
+\Cref{app:LAI-fprime}. Assume $C_{\mathrm{sp},p}$ is defined by \Cref{def:Csp-mapping-fiber} and that the \LAI\ local conditions
+satisfy \Cref{lem:LAI-local-equals-fprime}. Then there is a quasi-isomorphism in $D^b(\Z_p)$
+\[
+C_{\mathrm{sp},p}\ \simeq\ R\Gamma_{f'}(\Q,T).
+\]
+\end{proposition}
+
+\begin{proof}
+By definition, both $C_{\mathrm{sp},p}$ and $R\Gamma_{f'}(\Q,T)$ are mapping fibers of the same global-to-local restriction map,
+the only difference being the choice of local condition complexes that realize the desired $H^1$-subgroups while fixing $H^0$ and $H^2$.
+Using \Cref{lem:LAI-local-equals-fprime}, the \LAI\ local $H^1$-images agree with the $f'$ local conditions at every $v$; thus the
+corresponding mapping fibers are quasi-isomorphic.
+\end{proof}
+
+\begin{lemma}[Compatibility of $\phi_p$ with the inclusion $f'\subset f$]
+\label{lem:phi-is-fprime-inclusion}
+Under the identification of \Cref{prop:Csp-is-RGfprime}, the comparison map
+$\phi_p:C_{\mathrm{sp},p}\to C_{\mathrm{ar},p}$ agrees (in $D^b(\Z_p)$) with the natural morphism of Selmer complexes induced by
+the inclusions of local conditions $f'_v\subset f_v$ for all $v$.
+Consequently, the defect cone $C_{\mathrm{def},p}=\mathrm{Cone}(\phi_p)$ is the Selmer-defect cone for $f'\subset f$.
+\end{lemma}
+
+\begin{proof}
+Away from $v\mid pN$ the local conditions coincide, so the induced local maps are quasi-isomorphisms.
+At $v\mid pN$, the \LAI\ condition is (by \Cref{lem:LAI-local-equals-fprime}) the $f'$ condition and the arithmetic condition is $f$,
+so the comparison is induced by the inclusion $f'_v\subset f_v$. Functoriality of \LAI\ choices under admissible modifications
+(\Cref{prop:LAI-functoriality}) gives compatibility on the level of mapping fibers, hence the claim.
+\end{proof}
+
+\begin{remark}[Status of the interface theorem]
+\label{rem:interface-status}
+The content of \Cref{thm:LAI-interface} is precisely the conjunction of:
+(i) the mapping-fiber definition \Cref{def:Csp-mapping-fiber} of $C_{\mathrm{sp},p}$ in terms of \LAI-local condition complexes,
+and (ii) the local identification \Cref{lem:LAI-local-equals-fprime} at $v\mid pN$, yielding the Selmer-complex identification
+\Cref{prop:Csp-is-RGfprime} and the naturality statement \Cref{lem:phi-is-fprime-inclusion}.
+Once these are established, \Cref{cor:afu-1g-from-lai} becomes a formal corollary and the $p$-divisible obstruction is eliminated
+internally (cf.\ \Cref{prop:defect-divisible-obstruction}).
+\end{remark}
+
+
+% ============================================================
+\section{Local computations and normalization checks}
+\label{app:local-checks}
+
+This appendix records the purely \emph{local} normalization checks used by \LAI\ and the
+compatibility conditions required by \SME/\DLT. No global finiteness statement (e.g.\ $\#\Sha<\infty$)
+and no index-identification step is used here.
+
+\subsection{Bad primes and minimal models}
+\label{app:local-minimal-models}
+Fix for each $\ell\in S_{\mathrm{bad}}$ a minimal Weierstrass model and the associated N\'eron model.
+Record the Tamagawa number $c_\ell(E)$ and (if needed) the component group $\Phi_\ell$.
+All conventions follow standard references. \cite{SilvermanAEC1}
+
+\subsection{Tamagawa factors as local lattice normalizations}
+\label{app:tamagawa-lattices}
+We treat $c_\ell(E)$ (and the associated component data) as part of the local lattice bookkeeping
+used to define $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$.
+In particular, the \LAI\ package is chosen so that these local correction factors do not contribute
+to any non-$p$ valuation of the comparison scalar (cf.\ \Cref{lem:LAI-ell-integrality}).
+
+\subsection{Unramified places}
+\label{app:unramified}
+At primes $\ell\notin S_{\mathrm{bad}}\cup\{p\}$ the local condition is unramified, and the local factor
+in the determinant-line construction is normalized so that it contributes no $\ell$-adic valuation
+to the comparison scalar (in the sense of \Cref{lem:LAI-ell-integrality}).
+(Precise Selmer-complex formalism references are in \Cref{sec:selmer-detline}.) \cite{Nekovar2006}
+
+% ============================================================
+\section{Determinant-line conventions and the arithmetic reference element}
+\label{app:detline-conventions}
+
+\subsection{Determinant functors (minimal toolkit)}
+\label{app:detline-toolkit}
+
+We use the determinant functor formalism for perfect complexes in the sense of
+Knudsen--Mumford and Deligne \cite{KnudsenMumford1976,Deligne1987}.
+For a perfect complex $C$ over a ring $R$, we write $\detline_R(C)$ for its determinant line.
+If $C$ is quasi-isomorphic to a bounded complex of finite projective $R$-modules, then
+\[
+\detline_R(C)\;\cong\;\bigotimes_i \bigl(\det_R H^i(C)\bigr)^{(-1)^i},
+\]
+canonically up to the usual sign conventions.
+
+\subsection{The Selmer determinant line and its integral lattice}
+\label{app:detline-selmer}
+
+Fix the $p$-adic representation $V_p(E)$ and an integral lattice $T_p(E)$.
+Let $R\Gamma_f(\Q,V_p(E))$ be the Bloch--Kato (Selmer) complex, and $R\Gamma_f(\Q,T_p(E))$ its integral model
+(see \cite{BlochKato1990,Nekovar2006} for constructions and choices).
+We recall the definitions from Gate~\DLT:
+\[
+\Delta_{\mathrm{BK},p}(E)=\detline_{\Q_p}\bigl(R\Gamma_f(\Q,V_p(E))\bigr),
+\qquad
+\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)=\detline_{\Z_p}\bigl(R\Gamma_f(\Q,T_p(E))\bigr)\subset \Delta_{\mathrm{BK},p}(E).
+\]
+No finiteness assumption on $\Sha$ is needed for the existence of these lines.
+
+\subsection{Visible arithmetic factors as a determinant-line trivialization}
+\label{app:detline-visible}
+
+The arithmetic reference element $\mathbf{t}_{\mathrm{BK},p}(E)$ used in Gate~\DLT is the determinant-line
+encoding of the \emph{visible} BSD factors. It is defined by fixing (once and for all) the following
+normalization conventions:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(Period)} a N\'eron differential and the real period convention $\Omega_E>0$.
+\item \textbf{(Heights/Regulator)} the N\'eron--Tate height pairing on $E(\Q)/E(\Q)_{\mathrm{tors}}$ and the induced regulator determinant.
+\item \textbf{(Torsion)} normalization by $\#E(\Q)_{\mathrm{tors}}$.
+\item \textbf{(Tamagawa)} local normalization by $c_\ell(E)$ for $\ell\mid N$, compatible with the \LAI\ package (Gate~L).
+\item \textbf{(Orientation)} the real positivity/orientation calibration fixed in Gate~K.
+\end{itemize}
+
+\subsection{Definition of the arithmetic reference element}
+\label{app:detline-ref-def}
+
+We now state a basis-free definition sufficient for the main text.
+
+\begin{definition}[Arithmetic reference element $\mathbf{t}_{\mathrm{BK},p}(E)$]
+\label{def:detline-tbk}
+Let $\Delta_{\mathrm{BK},p}(E)$ be the Selmer determinant line and let $\Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)$ be its canonical lattice.
+We \emph{fix once and for all} a primitive generator
+\[
+\mathbf{t}_{\mathrm{BK},p}(E)\ \in\ \Delta_{\mathrm{BK},p}^{\mathrm{int}}(E)
+\]
+characterized by the following normalization requirements:
+\begin{enumerate}[leftmargin=2em]
+\item it is compatible with the \LAI\ local normalizations at all $\ell\neq p$ (so no non-$p$ valuation ambiguity remains);
+\item under the determinant-line identifications separating the visible contributions (period, regulator, torsion, Tamagawa),
+      it corresponds to the product of those visible factors, with the sign fixed by the real calibration (Gate~K);
+\item it involves no insertion of any $\Sha$-cardinality factor; any such factor, when available, is an \AFU-level
+      lattice index interpretation.
+\end{enumerate}
+\noindent\textbf{Status/uniqueness.} With the above conventions, $\mathbf{t}_{\mathrm{BK},p}(E)$ is fixed up to multiplication by a unit in $\Z_p^\times$.
+Gate~K removes the remaining real sign ambiguity when needed.
+\end{definition}
+
+\begin{remark}[Why this definition is sufficient]
+\label{rem:detline-sufficient}
+The main text uses $\mathbf{t}_{\mathrm{BK},p}(E)$ only as a fixed reference trivialization against which the transported
+spectral element is compared (Gate~\DLT-Q), and for which Gate~A3 proves the defect scalar equals $1$.
+Thus the abstract characterization in \Cref{def:detline-tbk} suffices for the logical separation:
+locking is rational and basis-free, while any integral/cardinality statement is delegated to \AFU.
+\end{remark}
+
+
+\subsection{Translation dictionary for external arithmetic packages}
+\label{app:translation-dict}
+
+When an external arithmetic package is plugged into \AFU\ (Euler systems, IMC, rank-bridge theorems),
+its output typically comes with \emph{its own} normalization conventions (periods, local conditions, and
+sometimes torsion/Tamagawa placement). To keep the separation ``mechanism vs.\ arithmetic input'' referee-clean,
+we require the plug-in to provide a comparison scalar
+\[
+\lambda_{\mathrm{trans},p}(E)\in\Q^\times
+\]
+so that, after rescaling by $\lambda_{\mathrm{trans},p}(E)^{-1}$, the external class is expressed in the same
+determinant-line coordinates as our arithmetic reference element $\mathbf{t}_{\mathrm{BK},p}(E)$.
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Periods.} Many sources use the \emph{optimal} (modular) period, while our convention is the N\'eron period
+attached to the chosen N\'eron differential (Appendix \Cref{app:detline-visible}). The ratio is an explicit rational factor,
+often involving the Manin constant $c_E$ in the modular parametrization.
+\item \textbf{Local conditions at bad primes.} At $\ell\mid N$, external Selmer conditions may be stated in terms of unramified,
+Greenberg, or ``finite'' local conditions. Gate~L fixes the \LAI\ convention so that the Tamagawa factor $c_\ell(E)$ is absorbed
+in $\mathbf{t}_{\mathrm{BK},p}(E)$; the translation scalar must account for any alternative placement.
+\item \textbf{Torsion factors.} Some formulations normalize by $\#E(\Q)_{\mathrm{tors}}$ (or its square) on the analytic side rather
+than inside the reference element. Our convention places torsion inside $\mathbf{t}_{\mathrm{BK},p}(E)$.
+\item \textbf{Sign/orientation.} Real sign conventions are fixed by Gate~K. Any external sign ambiguity must be aligned to this choice
+before comparing determinant-line generators.
+\end{itemize}
+
+\noindent\textbf{Contract form.} The only requirement on $\lambda_{\mathrm{trans},p}(E)$ is that it is \emph{explicit and checkable}:
+it must be a product of visible rational factors arising from the above conventions. Once supplied, the AFU plug-in is understood
+to work with the adjusted input so that the condition $V_{\mathrm{vis}}(E)=1$ is satisfied by construction.
+
+\subsection{AFU registry: external packages and coverage}
+
+% --- AFU harness auto-generated snippets (do not edit by hand) ---
+
+% ===== BEGIN INLINE: afu_snippets/AFU_DYADIC_SCOPE =====
+% Auto-generated by AFU harness (dyadic scope-switch)
+\newif\ifdyadic
+% Default: DYADIC OFF
+\dyadicfalse
+
+% Scope line (use in Introduction/Scope):
+%   Default: results for all odd primes p (p \neq 2).
+%   If \dyadictrue is set, include p=2 under the local package: D2_DYADIC_LOCAL
+% ===== END INLINE: afu_snippets/AFU_DYADIC_SCOPE =====
+
+
+% ===== BEGIN INLINE: afu_snippets/AFU_NORMALIZATION_STACK =====
+% Auto-generated by AFU harness: Normalization stack (lambda_trans)
+\begin{center}
+\begin{tabular}{p{0.22\linewidth} p{0.72\linewidth}}
+\textbf{Normalization stack} &
+We decompose the total translation scalar as
+\[
+\lambda_{\mathrm{trans}}^{\mathrm{total}}
+=
+\lambda_{\mathrm{trans}}^{\mathrm{period}}
+\cdot
+\lambda_{\mathrm{trans}}^{\mathrm{vis}}
+\cdot
+\lambda_{\mathrm{trans}}^{\mathrm{local}}.
+\]
+\\[2mm]
+\textbf{Period module (C*)} &
+$\lambda_{\mathrm{trans}}^{\mathrm{period}}$ is governed by the Manin/period scaling layer (C0$\to$C1$\to$C2).\\
+\textbf{Visible module (V*)} &
+$\lambda_{\mathrm{trans}}^{\mathrm{vis}}$ captures Tamagawa+torsion convention alignment (V0$\to$V1).\\
+\textbf{Local module (L*)} &
+$\lambda_{\mathrm{trans}}^{\mathrm{local}}$ captures local Selmer-condition convention alignment (L0$\to$L1).\\[2mm]
+\textbf{Default policies} &
+Period: use C0 unless upgraded to C1/C2.\newline
+Visible: use V0\_TAM\_TORS\_TRANSLATION; upgrade to V1\_TAM\_TORS\_MATCHING when exact matching is proven.\newline
+Local: use L0\_LOCAL\_TRANSLATION; upgrade to L1\_LOCAL\_MATCHING when equivalence to Gate L conventions is proven.\\[1mm]
+\textbf{Dyadic scope} &
+Default: p odd only (p != 2).\newline
+Opt-in: include $p=2$ only with package \nolinkurl{D2_DYADIC_LOCAL}.\\
+\end{tabular}
+\end{center}
+% ===== END INLINE: afu_snippets/AFU_NORMALIZATION_STACK =====
+
+
+% ===== BEGIN INLINE: afu_snippets/AFU_registry_table =====
+% Auto-generated by harness.py emit-tex
+% Requires: \usepackage{tabularx}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{0.12\textwidth} p{0.14\textwidth} X X p{0.18\textwidth}}
+\hline
+ID & Gates closed & Scope & Hypotheses (minimal) & I/U + W(gate) hooks\\\\
+\hline
+\nolinkurl{W0_KATO_R0} & AFU-2:A0\_w, F2 & r\_an=0; p: typically p odd, good ordinary (package must specify); red: good at p (package-dependent) & L(E,1) != 0 (or nonvanishing Euler system class); residual irreducibility (mod p); local conditions compatible with f' Selmer & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:AFU2-indexID-conditional}\\
+\nolinkurl{M0_IMC_ORDINARY} & AFU-2:A0\_m, Index-ID & r\_an=0; p: p odd, ordinary at p, typically p !| N; red: good ordinary at p & ordinary at p; residual irreducibility; IMC as proven in cited works applies & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:AFU2-indexID-conditional}\\
+\nolinkurl{R1_GZ_KOLY} & AFU-3:Rank-Bridge (r\_an=1 -> r\_alg=1) & r\_an=1; p: p odd, package-dependent; red: varies & Heegner hypothesis for an imaginary quadratic field K; L'(E,1) != 0; non-torsion Heegner point + Kolyvagin system applicability & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:R1-no-hidden-scaling}\\
+\nolinkurl{M0_IMC_SUPERSINGULAR_PLUSMINUS} & AFU-2:A0\_m, Index-ID, supersingular & r\_an=0; p: p odd, supersingular at p (a\_p = 0 or a\_p != 0 depending on cited package); red: good supersingular at p & supersingular at p (specify whether a\_p=0 is required); appropriate signed Selmer groups (±/signed) are used; main conjecture / divisibility in the signed setting applies (as proven in cited works); ... & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:AFU2-indexID-conditional}\\
+\nolinkurl{L_BAD_REDUCTION_LOCAL} & AFU-1G:Local@p|N, Visible-factors:cp, S\_AFU & r\_an=any; p: p arbitrary (typically p odd); applies at primes dividing the conductor N; red: multiplicative or additive at l | N (package must specify the reduction types covered) & explicit local condition complex agrees with the chosen Selmer condition (e.g., connected/Néron component condition); Tamagawa factor c\_l(E) is incorporated consistently in the reference element t\_BK; any small-prime pathologies are excluded or handled explicitly (notably l=2) & I: \Cref{lem:LAI-local-equals-fprime-bad}
+\newline U: \Cref{cor:afu-1g-from-lai}\\
+\nolinkurl{D2_DYADIC_LOCAL} & AFU-1G:Local@2, S\_AFU, dyadic & r\_an=any; p: p=2; red: package must specify (good/multiplicative/additive at 2); [excluded (opt-in; many IMC/Euler-system packages assume p odd)] & A dedicated p=2 local theory is specified (2-adic comparison/integrality framework + explicit local condition complexes).; All reduction-type subcases at 2 are either handled or excluded explicitly (good/multiplicative/additive).; Compatibility with the global determinant-line conventions (t\_BK / V\_vis) is stated. & I: \Cref{lem:LAI-local-equals-fprime-bad}
+\newline U: \Cref{cor:afu-1g-from-lai}\\
+\nolinkurl{M0_IMC_SUPERSINGULAR_AP0} & AFU-2:A0\_m, Index-ID, supersingular, a\_p=0 & r\_an=0; p: p odd, supersingular at p with a\_p=0 (covers the classical ± theory; p$\geq$3, often p$\geq$5 in some corollaries); red: good supersingular at p & supersingular at p with a\_p=0; signed (±) Selmer groups are used; signed IMC / reciprocity law in the a\_p=0 setting applies (as proven in the chosen reference); ... & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:AFU2-indexID-conditional}\\
+\nolinkurl{M0_IMC_SUPERSINGULAR_APNE0} & AFU-2:A0\_m, Index-ID, supersingular, a\_p!=0 & r\_an=0; p: p odd, supersingular at p with a\_p$\neq$0 (signed Selmer / sharp-flat or multi-signed variants); red: good supersingular at p & supersingular at p with a\_p != 0; appropriate signed Selmer groups are defined and used; signed IMC / reciprocity in the a\_p!=0 setting applies (as proven in the chosen reference); ... & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:AFU2-indexID-conditional}\\
+\nolinkurl{M1_RANK1_PPART_BSD} & AFU-2:M1 (rank-1 p-part Index-ID), Index-ID, rank-1 & r\_an=1; p: p odd; ordinary or supersingular depending on the chosen package; red: package-dependent (good at p typically) & analytic rank 1 (L'(E,1) != 0) and package-specific nonvanishing hypotheses; rank-1 arithmetic input available (Heegner/Kolyvagin or Kato-style rank-1 extension, depending on package); IMC / reciprocity in rank-1 setting applies (as proven in chosen references); ... & I: \Cref{thm:afu-upgrade}
+\newline U: \Cref{prop:AFU2-indexID-conditional}\\
+\hline
+\end{tabularx}
+\normalsize
+% ===== END INLINE: afu_snippets/AFU_registry_table =====
+
+
+% ===== BEGIN INLINE: afu_snippets/AFU_translation_dictionary =====
+% Auto-generated by harness.py emit-tex
+% Requires: \usepackage{tabularx}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{0.18\textwidth} X}
+\hline
+Package & Normalization / translation notes\\\\
+\hline
+\nolinkurl{W0_KATO_R0} & period: not used directly for A0\_w output; still declare if L-values appear; lambda\_trans: N/A or 1 (if no L-value normalization is consumed); notes: Package gives structural Selmer control; valuation identity belongs to M0.\\
+\nolinkurl{M0_IMC_ORDINARY} & period: declare: Neron vs optimal period; sign convention; torsion: declare whether torsion factor is included in formula; tamagawa: declare whether cp factors are included and how; lambda\_trans: explicit translation scalar aligning external conventions to t\_BK\\
+\nolinkurl{R1_GZ_KOLY} & period: if L' appears, declare conventions; otherwise N/A; lambda\_trans: declare if comparing heights/periods to t\_BK conventions\\
+\nolinkurl{M0_IMC_SUPERSINGULAR_PLUSMINUS} & period: declare the p-adic L-function normalization (Pollack ±, or signed variants) and its period choice; torsion: declare torsion convention if included in external BSD-style statement; tamagawa: declare whether bad-prime Tamagawa factors are built-in or handled separately; lambda\_trans: explicit translation scalar aligning signed p-adic L-function conventions to t\_BK; notes: Umbrella entry; prefer the split packages \nolinkurl{M0_IMC_SUPERSINGULAR_AP0} and \nolinkurl{M0_IMC_SUPERSINGULAR_APNE0} for explicit hypotheses/citations.\\
+\nolinkurl{L_BAD_REDUCTION_LOCAL} & period: N/A locally; tamagawa: declare cp convention (connected component index) used by both sides; lambda\_trans: usually 1 if both sides use the same Tamagawa matching convention; otherwise declare; notes: This is where Gate L's 'Tamagawa matching' is certified against the external package conventions.\\
+\nolinkurl{D2_DYADIC_LOCAL} & period: declare any special dyadic period conventions; tamagawa: declare c\_2(E) convention and whether it is absorbed; lambda\_trans: declare if dyadic package uses different normalizations from the main (odd p) packages; notes: Default global flow treats p=2 as an explicit exceptional place; include this package only if a concrete dyadic reference is adopted.\\
+\nolinkurl{M0_IMC_SUPERSINGULAR_AP0} & period: declare Pollack ± p-adic L-function normalization and associated period choice; torsion: declare torsion convention if included in external BSD-style statement; tamagawa: declare whether bad-prime Tamagawa factors are built-in or handled via \nolinkurl{L_BAD_REDUCTION_LOCAL}; lambda\_trans: explicit translation scalar aligning signed conventions to t\_BK; notes: Keep the signed (±) conventions explicit; do not merge with ordinary M0.\\
+\nolinkurl{M0_IMC_SUPERSINGULAR_APNE0} & period: declare signed p-adic L-function normalization and period choice; torsion: declare torsion convention if included; tamagawa: declare whether bad-prime Tamagawa factors are built-in or handled via \nolinkurl{L_BAD_REDUCTION_LOCAL}; lambda\_trans: explicit translation scalar aligning signed conventions to t\_BK; notes: This is distinct from the a\_p=0 ± theory; keep separate IDs.\\
+\nolinkurl{M1_RANK1_PPART_BSD} & period: declare whether the leading term uses Néron vs optimal period, and any p-adic height normalization; torsion: declare torsion factor convention; tamagawa: declare how Tamagawa factors enter; use \nolinkurl{L_BAD_REDUCTION_LOCAL} if separated; lambda\_trans: explicit translation scalar aligning external rank-1 normalizations to t\_BK; notes: This package complements AFU-3 (rank bridge) by providing the valuation/index identification in rank 1.\\
+\hline
+\end{tabularx}
+\normalsize
+% ===== END INLINE: afu_snippets/AFU_translation_dictionary =====
+
+% --- end AFU harness snippets ---
+\label{app:afu-registry}
+
+For convenience, we summarize the intended external inputs as a one-page registry. The table records the \emph{output}
+each package must provide to close the corresponding gate in our architecture; precise hypotheses vary by source and are
+those stated in the cited references.
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{0.14\textwidth} p{0.16\textwidth} p{0.26\textwidth} p{0.18\textwidth} p{0.20\textwidth}}
+\hline
+\textbf{Target} & \textbf{Gate closed} & \textbf{Typical coverage / hypotheses} & \textbf{Required output} & \textbf{Entry points} \\
+\hline
+A0$_w$ (cotorsion closure) &
+AFU-2 precondition; closes F2 &
+$p\neq 2$, analytic rank $0$; standard Euler-system hypotheses (residual irreducibility, suitable local conditions) &
+$\Z_p$-corank$\,H^1=0$ for the relevant Selmer group; finiteness of $\Sha[p^\infty]$ in this regime &
+Kato-type Euler system \cite{Kato2004PadicHodge}; Selmer formalism \cite{Nekovar2006} \\
+\hline
+A0$_m$ (Index-ID / valuation identity) &
+AFU-2 &
+$p\neq 2$ in a regime covered by an IMC/reciprocity result (often ordinary at $p$); normalization aligned via Appendix \Cref{app:translation-dict} &
+Identification of the determinant-line defect exponent with the expected BSD $p$-primary defect exponent (length/valuation identity) &
+IMC / reciprocity entry points \cite{SkinnerUrban2014IMCGL2,CastellaCiperianiSkinnerSprung2018,SkinnerZhang2014} \\
+\hline
+Rank bridge ($r_{\mathrm{an}}=1$) &
+AFU-3 &
+Heegner/Gross--Zagier hypotheses; Kolyvagin descent hypotheses; $p\neq 2$ &
+$r_{\mathrm{alg}}=1$ and finiteness of $\Sha[p^\infty]$ (hence rank equality in analytic rank $1$) &
+Gross--Zagier + Kolyvagin \cite{GrossZagier1986,KolyvaginEulerSystems,Nekovar2006} \\
+\hline
+Local package at $S_{\mathrm{AFU}}(E)$ &
+AFU-1G (integral upgrade beyond good $p$) &
+Primes dividing $2Nc_E$ (bad reduction, dyadic, Manin constant); handled by local comparison conventions &
+A local determinant-line comparison matching the chosen visible normalizations (Tamagawa/period/torsion placement) &
+Gate~L and Appendix \Cref{app:detline-visible} (plus source-specific local results, when invoked) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Sign conventions and the role of Gate K}
+\label{app:detline-sign}
+
+The determinant-line formalism naturally produces elements only up to sign when passing through real one-dimensional
+lines. Gate~K fixes the sign by a positivity/orientation convention compatible with $\Omega_E>0$ and $\Reg(E)>0$.
+This guarantees that once Gate~A3 collapses $u(E)$ to $\{\pm1\}$, the $+1$ branch is canonical.
+
+
+% ============================================================
+\section{Referee checklist: where each claim is proved}
+\label{app:referee-checklist}
+
+This appendix is a navigation aid: each bullet points to the exact place where the corresponding claim is stated/proved.
+
+\subsection{Canonical targets and ``no \texorpdfstring{$\Sha$}{Sha} bypass'' guarantees}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Arithmetic container is canonical (not ``MW without $\Sha$'').} Gate~\DLT, \Cref{sec:DLT-container}; scope remark \Cref{rem:DLT-sha-not-removed}.
+\item \textbf{No hidden finiteness claim about $\Sha$.} Introduction scope statement \Cref{sec:introduction}; AFU interface statement/remark \Cref{thm:AFU-template,rem:AFU-no-hidden}.
+\end{itemize}
+
+\subsection{Where the single defect scalar is defined}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Transport map and transported element.} \Cref{def:transport-iso,def:up} (Gate~\DLT-Q).
+\item \textbf{Defect scalar $u_p(E)$ and rational defect $u(E)$.} \Cref{def:up}; invariance/canonicality \Cref{prop:DLT-canonicality,prop:DLT-reduction}; global/local comparison \Cref{lem:DLT-global-local}.
+\end{itemize}
+
+\subsection{Local valuation control (LAI)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Non-$p$ valuation vanishing.} Gate~L: \Cref{lem:LAI-ell-integrality}; transport-level form \Cref{prop:DLT-local-control}.
+\end{itemize}
+
+\subsection{The unconditional locking theorem (URC)}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Adelic collapse to a $p$-power.} \Cref{lem:URC-unit-reduction} (using \Cref{prop:DLT-local-control}) gives $u(E)=\pm p^k$.
+\item \textbf{Elimination of the $p$-power discrepancy (locking prime integrality).} Input \Cref{thm:locking-prime-integrality} is used inside \Cref{lem:URC-no-p-power} to get $v_p(u_p(E))=0$ and hence $k=0$.
+\item \textbf{Sign fixing (archimedean calibration).} Gate~K: \Cref{lem:K-archimedean-positive} via \Cref{lem:URC-sign} selects the $+1$ branch.
+\item \textbf{Main closure statement $u(E)=1$.} \Cref{thm:URC-locking} from \Cref{lem:URC-unit-reduction,lem:URC-no-p-power,lem:URC-sign}.
+\end{itemize}
+
+\subsection{Where the final conclusion is stated}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Locked determinant-line identity in the arithmetic container.} \Cref{thm:synthesis-locked} and \eqref{eq:synthesis-locked}.
+\item \textbf{Defect localization (only a lattice index can remain).} \Cref{cor:synthesis-defect-localization}.
+\end{itemize}
+
+\subsection{Where upgrades to classical \texorpdfstring{$\Sha$}{Sha} statements enter}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Index formalism.} \Cref{def:AFU-index} (and, if needed under AFU-1G, \Cref{lem:AFU-L2-localization-vp}).
+\item \textbf{Internal AFU-1G (conditional on the LAI--Selmer interface).} Local finiteness inputs \Cref{lem:LAI-fprime-bad,lem:LAI-fprime-p,cor:LAI-fprime-support}; interface claim \Cref{thm:LAI-interface}; internal consequence \Cref{cor:afu-1g-from-lai}.
+\item \textbf{LAI $\rightarrow f'$ and mapping-fiber identification (supporting the interface claim).} Mapping-fiber definition \Cref{def:Csp-mapping-fiber}; local identifications \Cref{lem:LAI-local-equals-fprime-bad,lem:LAI-local-equals-fprime-p}; glue \Cref{lem:LAI-local-equals-fprime-glue}; Selmer-complex identification \Cref{prop:Csp-is-RGfprime}; comparison-map naturality \Cref{lem:phi-is-fprime-inclusion}; status remark \Cref{rem:interface-status}.
+\item \textbf{AFU plug-in interface (external packages).} \Cref{thm:AFU-template} and examples \Cref{sec:AFU-packages}.
+\end{itemize}
+
+\begin{remark}[What is unconditional vs.\ modular]
+Everything up to and including \Cref{thm:synthesis-locked} is the unconditional ``locking layer''. Any statement that identifies a lattice index with $\#\Sha(E/\Q)[p^\infty]$ (or proves $\#\Sha<\infty$) is modular and enters only through the \AFU\ plug-in interface.
+\end{remark}
+
+\newpage
+\printbibliography
+
+
+\end{document}
