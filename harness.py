@@ -149,7 +149,7 @@ def emit_tex(data: dict, outdir: str) -> None:
         doc_u = pkg.get('doc_hook_use')
         if doc_i and doc_u:
             # Compact dual hook: I:/U: with a line break inside the cell.
-            doc = f"I: {doc_i}\newline U: {doc_u}"
+            doc = f"I: {doc_i}\\newline U: {doc_u}"
         else:
             doc = pkg.get('doc_hook', r'\\Cref{sec:AFU}')
         lines.append(f"{pid} & {gates} & {scope} & {hyps_s} & {doc}\\\\")
